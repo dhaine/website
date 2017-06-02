@@ -1,6 +1,6 @@
 baseurl = "https://example.com/"  # End your URL with a `/` trailing slash.
-title = "Academic"
-copyright = "&copy; 2016 Your Name"
+title = "Denis Haine"
+copyright = "&copy; 2017 Denis Haine"
 theme = "hugo-academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
@@ -19,16 +19,16 @@ defaultContentLanguageInSubdir = false
   hrefTargetBlank = true
 
 [params]
-  name = "Lena Smith"
-  role = "Professor of Artificial Intelligence"
-  organization = "Stanford University"
+  name = "Denis Haine"
+  role = "Chercheur postdoctoral"
+  organization = "Université de Montréal"
   organization_url = ""
   avatar = "portrait.jpg"
-  email = "test@example.org"
-  address = "Building 1 Room 1, Stanford University, California, 90210, USA"
-  office_hours = "Monday 10:00 to 13:00 or email for appointment"
-  phone = "888 888 88 88"
-  skype = "echo123"
+  email = "denis.haine@umontreal.ca"
+  address = ""
+  office_hours = ""
+  phone = ""
+  skype = ""
   telegram = ""
 
   # Enable Keybase in Contact section by entering your keybase.io username.
@@ -36,7 +36,7 @@ defaultContentLanguageInSubdir = false
 
   # Date format (refer to Go's date format: http://flippinggodateformat.com )
   #   Examples: "Mon, Jan 2, 2006" or "2006-01-02"
-  date_format = "Mon, Jan 2, 2006"
+  date_format = "2006-01-02"
 
   # Enable global LaTeX math rendering?
   #   If false, you can enable it locally on a per page basis.
@@ -125,22 +125,22 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "envelope"
     icon_pack = "fa"
-    link = "mailto:test@example.org"
+    link = "mailto:denis.haine@umontreal.ca"
 
   [[params.social]]
     icon = "twitter"
     icon_pack = "fa"
-    link = "//twitter.com/GeorgeCushen"
+    link = "//twitter.com/denishaine"
 
   [[params.social]]
     icon = "google-scholar"
     icon_pack = "ai"
-    link = "https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ"
+    link = "https://scholar.google.ca/citations?user=KFeLZyIAAAAJ&hl=en"
 
   [[params.social]]
     icon = "github"
     icon_pack = "fa"
-    link = "//github.com/gcushen"
+    link = "//github.com/dhaine"
 
 
 # Navigation Links
@@ -150,12 +150,12 @@ defaultContentLanguageInSubdir = false
 
 [[menu.main]]
   name = "Home"
-  url = "#about"
+  url = "#bio"
   weight = 1
 
 [[menu.main]]
   name = "Publications"
-  url = "#publications_selected"
+  url = "#publications"
   weight = 2
 
 [[menu.main]]
@@ -177,6 +177,11 @@ defaultContentLanguageInSubdir = false
   name = "Contact"
   url = "#contact"
   weight = 6
+
+[[menu.main]]
+  name = "CV"
+  url = "cv/denishaine_cv.pdf"
+  weight = 5
 
 # Taxonomies.
 [taxonomies]
