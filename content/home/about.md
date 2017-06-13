@@ -11,32 +11,40 @@ weight = 1
 
 # List your academic interests.
 [interests]
+  title = "Interests"
   interests = [
-    "Artificial Intelligence",
-    "Computational Linguistics",
-    "Information Retrieval"
-  ]
+    "Epidemiology",
+    "Biostatistics",
+    "Animal health",
+    "Bias and causal inference",
+    "R"
+    ]
 
-# List your qualifications (such as academic degrees).
+# List your qualications (such as academic degrees).
+[education]
+  title = "Education"
+  
 [[education.courses]]
-  course = "PhD in Artificial Intelligence"
-  institution = "Stanford University"
-  year = 2012
+  course = "PhD en sciences vétérinaires, option épidémiologie"
+  institution = "Université de Montréal"
+  year = 2017
 
 [[education.courses]]
-  course = "MEng in Artificial Intelligence"
-  institution = "Massachusetts Institute of Technology"
-  year = 2009
+  course = "MSc in Veterinary Epidemiology"
+  institution = "The London School of Hygiene and Tropical Medicine & The Royal Veterinary College"
+  year = 2002
 
 [[education.courses]]
-  course = "BSc in Artificial Intelligence"
-  institution = "Massachusetts Institute of Technology"
-  year = 2008
+  course = "Docteur en médecine vétérinaire"
+  institution = "Université de Liège"
+  year = 1998
  
 +++
 
 # Biography
 
-Lena Smith is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate. 
+I'm a post-doctoral researcher at the Faculté de médecine vétérinaire,
+Université de Montréal, within the [Canadian Bovine Mastitis and Milk Quality
+Research Network](http://www.medvet.umontreal.ca/rcrmb/en/). I'm working on
+selection and misclassification bias in longitudinal udder health studies, and
+on economics of bovine mastitis.

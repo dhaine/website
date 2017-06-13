@@ -1,4 +1,4 @@
-baseurl = "https://example.com/"  # End your URL with a `/` trailing slash.
+baseurl = "https://denishaine.ca/"  # End your URL with a `/` trailing slash.
 title = "Denis Haine"
 copyright = "&copy; 2017 Denis Haine"
 theme = "hugo-academic"
@@ -15,15 +15,20 @@ googleAnalytics = ""
 defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = false
 
+ignoreFiles = ["\\.Rmd$"]
+
 [blackfriday]
   hrefTargetBlank = true
 
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
 [params]
   name = "Denis Haine"
-  role = "Chercheur postdoctoral"
+  role = "Post-doctoral researcher"
   organization = "Université de Montréal"
   organization_url = ""
-  avatar = "portrait.jpg"
+  avatar = "dh2.jpg"
   email = "denis.haine@umontreal.ca"
   address = ""
   office_hours = ""
@@ -40,7 +45,7 @@ defaultContentLanguageInSubdir = false
 
   # Enable global LaTeX math rendering?
   #   If false, you can enable it locally on a per page basis.
-  math = false
+  math = true
 
   # Highlight.js options
   #   highlight
@@ -142,6 +147,26 @@ defaultContentLanguageInSubdir = false
     icon_pack = "fa"
     link = "//github.com/dhaine"
 
+  [[params.social]]
+    icon = "linkedin"
+    icon_pack = "fa"
+    link = "https://ca.linkedin.com/in/denishaine"
+
+#  [[params.social]]
+#    icon = "stack-overflow"
+#    icon_pack = "fa"
+#    link = "https://stackoverflow.com/users/8126916/denis"
+
+  [[params.social]]
+    icon = "researchgate"
+    icon_pack = "ai"
+    link = "https://www.researchgate.net/profile/Denis_Haine"
+
+  [[params.social]]
+    icon = "orcid"
+    icon_pack = "ai"
+    link = "https://orcid.org/0000-0002-6691-7335"
+
 
 # Navigation Links
 #   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the
@@ -158,30 +183,30 @@ defaultContentLanguageInSubdir = false
   url = "#publications"
   weight = 2
 
+#[[menu.main]]
+#  name = "Blog"
+#  url = "#posts"
+#  weight = 3
+
+#[[menu.main]]
+#  name = "Projects"
+#  url = "#projects"
+#  weight = 4
+
 [[menu.main]]
-  name = "Posts"
-  url = "#posts"
+  name = "Software"
+  url = "software/"
   weight = 3
-
-[[menu.main]]
-  name = "Projects"
-  url = "#projects"
-  weight = 4
-
-[[menu.main]]
-  name = "Teaching"
-  url = "#teaching"
-  weight = 5
-
-[[menu.main]]
-  name = "Contact"
-  url = "#contact"
-  weight = 6
 
 [[menu.main]]
   name = "CV"
   url = "cv/denishaine_cv.pdf"
-  weight = 5
+  weight = 4
+
+[[menu.main]]
+  name = "Contact"
+  url = "#contact"
+  weight = 4
 
 # Taxonomies.
 [taxonomies]
@@ -195,3 +220,6 @@ defaultContentLanguageInSubdir = false
 # Configure the English version of the website.
 [languages.en]
   languageCode = "en-us"
+
+[languages.fr]
+  languageCode = "fr"
