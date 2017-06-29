@@ -16,4 +16,4 @@ me) in the first newsletter
 of [LCMATE](http://lists.uth.gr/mailman/listinfo/lcmate), the mailing list for
 those interested in latent class models for the evaluation of diagnostic tests.
 
-You can fin the newsletter [here](/pdf/LCMATE newsletter 1.pdf).
+You can find the newsletter [here](/pdf/LCMATE newsletter 1.pdf).
