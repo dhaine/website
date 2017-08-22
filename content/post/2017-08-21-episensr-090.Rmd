@@ -72,7 +72,7 @@ Note the bias despite the large sensitivity and specificity.
 
 You can even reproduce the contour plots in Chu et al. paper!
 
-```{r}
+```{r, fig.cap='Contour plot of point estimate of corrected odds ratio (OR)'}
 dat <- expand.grid(Se = seq(0.582, 1, 0.02),
                    Sp = seq(0.762, 1, 0.02))
 
@@ -87,26 +87,26 @@ library(ggplot2)
 library(directlabels)
 p1 <- ggplot(dat, aes(x = Se, y = Sp, z = OR_c)) +
     geom_contour(aes(colour = ..level..), breaks = c(4.32, 6.96, 8.56, 12.79, 23.41, 432.1)) +
-    annotate("text", x = 1, y = 1, label = "4.32", size = 2) +
+    annotate("text", x = 1, y = 1, label = "4.32", size = 4) +
     scale_fill_gradient(limits = range(dat$OR_c), high = 'red', low = 'green') +
     scale_x_continuous(breaks = seq(0.5, 1, .1), expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0.5, 1, .1), expand = c(0,0)) +
     coord_fixed(ylim = c(0.5, 1.025), xlim = c(0.5, 1.025)) +
     scale_colour_gradient(guide = 'none') +
-    theme(plot.title = element_text(face = "bold", size = 8),
-          axis.title = element_text(face="bold", size = 6),
-          axis.text.y = element_text(colour="grey42", size = 5),
-          axis.text.x = element_text(colour="grey42", size = 5),
+    theme(plot.title = element_text(face = "bold", size = 16),
+          axis.title = element_text(face="bold", size = 14),
+          axis.text.y = element_text(colour="grey42", size = 12),
+          axis.text.x = element_text(colour="grey42", size = 12),
           legend.position = "none") +
     xlab("Sensitivity") +
     ylab("Specificity") +
     ggtitle("Estimate of Corrected OR")
 direct.label(p1, list("far.from.others.borders", "calc.boxes", "enlarge.box", 
-                           hjust=1, vjust=-.5, box.color = NA, cex = .5,
+                           hjust=1, vjust=-.5, box.color = NA, cex = .9,
                            fill = "transparent", "draw.rects"))
 ```
 
-```{r}
+```{r, fig.cap='Contour plot of 95% lower confidence limit of corrected OR'}
 dat$ORc_lci <- apply(dat, 1,
                      function(x) misclassification(matrix(c(126, 92, 71, 224),
                                                           nrow = 2, byrow = TRUE),
@@ -117,21 +117,21 @@ dat$ORc_lci <- round(dat$ORc_lci, 2)
 p3 <- ggplot(dat, aes(x = Se, y = Sp, z = ORc_lci)) +
     geom_contour(aes(colour = ..level..),
                  breaks = c(4.05, 4.64, 5.68, 7.00, 9.60)) +
-    annotate("text", x = 1, y = 1, label = "2.96", size = 2) +
+    annotate("text", x = 1, y = 1, label = "2.96", size = 4) +
     scale_fill_gradient(limits = range(dat$ORc_lci), high = 'red', low = 'green') +
     scale_x_continuous(breaks = seq(0.5, 1, .1), expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0.5, 1, .1), expand = c(0,0)) +
     coord_fixed(ylim = c(0.5, 1.025), xlim = c(0.5, 1.025)) +
     scale_colour_gradient(guide = 'none') +
-    theme(plot.title = element_text(face = "bold", size = 8),
-          axis.title = element_text(face="bold", size = 6),
-          axis.text.y = element_text(colour="grey42", size = 5),
-          axis.text.x = element_text(colour="grey42", size = 5),
+    theme(plot.title = element_text(face = "bold", size = 16),
+          axis.title = element_text(face="bold", size = 14),
+          axis.text.y = element_text(colour="grey42", size = 12),
+          axis.text.x = element_text(colour="grey42", size = 12),
           legend.position = "none") +
     xlab("Sensitivity") +
     ylab("Specificity") +
     ggtitle("95% LCI of Corrected OR")
 direct.label(p3, list("far.from.others.borders", "calc.boxes", "enlarge.box", 
-                           hjust=1, vjust=-.5, box.color = NA, cex = .5,
+                           hjust=1, vjust=-.5, box.color = NA, cex = .9,
                            fill = "transparent", "draw.rects"))
 ```
