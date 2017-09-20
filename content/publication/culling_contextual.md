@@ -17,8 +17,8 @@ url_slides = ""
 url_video = ""
 
 [[url_custom]]
-name = "Link (valid until July 12, 2017)"
-url = "https://authors.elsevier.com/a/1V5SUc6kEJ9aV"
+name = "Link"
+url = "http://www.sciencedirect.com/science/article/pii/S0167587716307231?via%3Dihub"
 
 +++
 
