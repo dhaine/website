@@ -1,0 +1,338 @@
+---
+title: Scientific collaboration patterns in cattle health research in Canada
+author: Denis Haine
+date: '2017-10-11'
+slug: dairyres-rmd
+categories: ['R', 'epidemiology']
+tags: ["dairy", "cow", "#rstats", "epidemiology"]
+---
+
+
+
+<p>I was curious to see if I could identify some patterns of collaboration and research topics in cow health research made in Canada. For this, I’m trying the R package <a href="https://cran.r-project.org/package=bibliometrix" title="bibliometrix"><code>bibliometrix</code></a>. This package allows quantitative research in scientometrics and bibliometrics by providing different routines for importing bibliographic data from <a href="https://www.scopus.com/" title="Scopus">Scopus</a> and <a href="http://www.webofknowledge.com/" title="Web of Knowledge">ISI Web of Knowledge</a> databases, and performing various bibliometric analyses. The <a href="http:\www.bibliometrix.com">Bibliometrix website</a> provides a good tutorial that I will mainly follow, with the sole objective to satisfy my curiosity and have fun!</p>
+<p>As explained in the <code>bibliometrix</code> tutorial, bibliographic data were retrieved from ISI Web of Knowledge, Web of Science Core Collection database. The following descriptors of thematics were used:</p>
+<blockquote>
+<p>TS=(ruminant OR cow OR bovine OR cattle OR calf) AND PY=(2012-2017) AND TS=(coccidiosis OR Pasteurella OR mastitis OR parvovirus OR PPV OR mummification OR stillbirth OR “foot-and-mouth disease” OR FMD “Aphtous fever” OR pneumonia OR streptococci OR “E. coli” OR tuberculosis OR brucellosis OR salmonellosis OR salmonella OR anthrax OR babesiosis OR piroplasmosis OR “tick fever” OR “red water” OR babesia OR sarcocystosis OR sarcosystis OR toxoplasmosis OR toxoplasma OR streptococcus OR clostridium OR influenza OR leptospirosis OR mycoplasma OR rotavirus OR BSE OR prion OR TSE OR “mad cow” OR metritis OR encephalitis OR biotin OR “energy balance” OR “drug resistance” OR mannheimia OR escherichia-coli OR “bovine respiratory disease” OR “subclinical ketosis” OR beta-hydroxybutyrate OR campylobacter OR epidemic OR “viral hemorrhagic fever” OR O157H7 OR lameness OR diarrhea OR “necrotic enteritis” OR “zoonotic pathogen” OR zoonosis OR q-fever OR “animal welfare” OR giardia OR paratuberculosis OR coxiella OR coxiellosis OR “Johne’s disease” OR “uterine disease” OR endometritis OR reproductive-performance OR “west nile virus” OR PrPSc OR cesarean-section OR aureus OR staphylococcus OR epidermidis OR eimeria OR coccidia OR haemonchus OR “metabolic disease” OR ketosis OR “O157:H7” OR foot-and-mouth OR pseudomonas OR “airborne transmission” OR “foodborne transmission” OR “gastrointestinal nematodes” OR ixodes OR “tick-borne disease” OR borreliosis OR “failure of transfer of passive immunity” OR mycotoxins OR “antimicrobial resistance” OR enterococcus OR “foodborne pathogens” OR “somatic cell count” OR agalactiae OR mastitis OR “staphylococcus aureus” OR “MRSA” OR uberis OR “subacute ruminal acidosis” OR “pregnancy loss” OR fertility OR anovulation OR “udder health” OR “bovine spongiform encephalopathy” OR scrapie OR “bulk milk somatic cell count” OR “downer cow syndrome” OR “milk fever” OR mycobacterium OR listeria OR rotavirus OR “intramammary infection” OR parasitism OR borrelia OR bluetongue OR BVD OR “bovine viral diarrhea” OR abortion OR vibriosis OR “cystic ovaries” OR neosporosis OR “repeat breeding syndrome” OR “retained fetal membranes” OR schmallenberg OR acetonaemia OR “fatty liver” OR acidosis OR “calf scour” OR IBR OR “digital dermatitis” OR “foot rot” OR “epizootic hemorrhagic disease” OR lice OR mange OR ringworm OR “sole ulcer” OR “displaced abomasum” OR botulism OR rabies) AND LA=(English OR French) AND DT=(Article OR Review) AND CU=(Canada)</p>
+</blockquote>
+<p>i.e. articles or reviews published between 2012 and now (October 2017), in English or French, under the SCI-EXPANDED citation index, for Canada. The ISI website only allows to export 500 records at a time. So several files were exported in bibtex format, then merged together and their leading white spaces removed thanks to a small bash script:</p>
+<pre class="shell"><code>cat *.bib &gt;&gt; records.bib
+sed &quot;s/^[ \t]*//&quot; -i records.bib</code></pre>
+<p>Then we can load the R package and read the data!</p>
+<pre class="r"><code>library(bibliometrix)</code></pre>
+<pre><code>## 
+## bibliometrix
+## A R tool for comprehensive bibliometric analysis of scientific literature
+## 
+## by Massimo Aria &amp; Corrado Cuccurullo
+## 
+## http:\\www.bibliometrix.org</code></pre>
+<pre class="r"><code>D &lt;- readFiles(&quot;records.bib&quot;)
+M &lt;- convert2df(D, dbsource = &quot;isi&quot;, format = &quot;bibtex&quot;)
+
+results &lt;- biblioAnalysis(M, sep = &quot;;&quot;)</code></pre>
+<p>So we’ve got 1569 articles and 114 reviews, from 5157 authors.</p>
+<pre class="r"><code>results$Articles  ## number of articles</code></pre>
+<pre><code>## [1] 1683</code></pre>
+<pre class="r"><code>results$nAuthors  ## number of authors</code></pre>
+<pre><code>## [1] 5157</code></pre>
+<p>There’s a generic <code>summary</code> function that provides overall results of the bibliographic analysis:</p>
+<pre class="r"><code>S &lt;- summary(results, k = 10, pause = FALSE)</code></pre>
+<pre><code>## 
+## 
+## Main Information about data
+## 
+##  Articles                              1683 
+##  Sources (Journals, Books, etc.)       377 
+##  Keywords Plus (ID)                    6039 
+##  Author&#39;s Keywords (DE)                3718 
+##  Period                                2012 - 2017 
+##  Average citations per article         7.185 
+## 
+##  Authors                               5157 
+##  Author Appearances                    8680 
+##  Authors of single authored articles   17 
+##  Authors of multi authored articles    5140 
+## 
+##  Articles per Author                   0.326 
+##  Authors per Article                   3.06 
+##  Co-Authors per Articles               5.16 
+##  Collaboration Index                   3.12 
+##  
+## 
+## Annual Scientific Production
+## 
+##  Year    Articles
+##     2012      293
+##     2013      274
+##     2014      301
+##     2015      298
+##     2016      305
+##     2017      212
+## 
+## Annual Percentage Growth Rate -6.266756 
+## 
+## 
+## Most Productive Authors
+## 
+##        Authors        Articles     Authors        Articles Fractionalized
+## 1  MCALLISTER,TA            66 MCALLISTER,TA                        12.55
+## 2  BARKEMA,HW               63 BARKEMA,HW                           11.77
+## 3  WEARY,DM                 41 WEARY,DM                             10.70
+## 4  LEBLANC,SJ               40 LEBLANC,SJ                           10.36
+## 5  ORSEL,K                  35 VON,KEYSERLINGKMAG                    9.39
+## 6  VON,KEYSERLINGKMAG       34 DEVRIES,TJ                            8.05
+## 7  DE,BUCKJ                 32 BUCZINSKI,S                           8.01
+## 8  DEVRIES,TJ               31 LESLIE,KE                             6.72
+## 9  LESLIE,KE                30 ORSEL,K                               6.50
+## 10 DUFFIELD,TF              29 DUFFIELD,TF                           6.27
+## 
+## 
+## Top manuscripts per citations
+## 
+##                                                                                                                                                                                                                   Paper         
+## 1  QUINLAN CL;ORR AL;PEREVOSHCHIKOVA JR;ACKRELL BA;BRAND MD,(2012),NA                                                                                                                                                           
+## 2  LAING R;KIKUCHI T;MARTINELLI A;TSAI RN;REDMAN E;HOLROYD DJ;BEASLEY H;BRITTON C;CURRAN D;DEVANEY E;GILABERT A;HUNT F;JOHNSTON SL;KRYUKOV I;LI AA;REID AJ;SARGISON GI;WASMUTH JD;WOLSTENHOLME M;GILLEARD JS;COTTON JA,(2013),NA
+## 3  REID AJ;VERMONT SJ;COTTON JA;HARRIS D;HILL-CAWTHORNE GA;KOENEN-WAISMAN SM;MOURIER T;NORTON R;QUAIL MA;SANDERS M;SHANMUGAM D;SOHAL A;WASMUTH JD;BRUNK B;GRIGG JC;PARKINSON J;ROOS AJ;BERRIMAN M;PAIN A;WASTLING JM,(2012),NA  
+## 4  PLOEGER S;STUMPFF F;PENNER J;GAEBEL G;MARTENS Z;GUENZEL D;ASCHENBACH JR,(2012),NA                                                                                                                                            
+## 5  ALARCON EI;UDEKWU K;SKOG M;PACIONI NL;STAMPLECOSKIE KG;GONZALEZ-BEJAR N;WICKHAM A;RICHTER-DAHLFORS M;SCAIANO JC,(2012),NA                                                                                                    
+## 6  ZEBELI Q;ASCHENBACH JR;TAFAJ M;BOGUHN BN;DROCHNER W,(2012),NA                                                                                                                                                                
+## 7  BAKER LA;WATT IN;RUNSWICK MJ;WALKER JE;RUBINSTEIN JL,(2012),NA                                                                                                                                                               
+## 8  VON KEYSERLINGK MAG;BARRIENTOS A;ITO K;GALO DM,(2012),NA                                                                                                                                                                     
+## 9  SCHWARZ EM;KORHONEN PK;CAMPBELL ND;JEX AR;JABBAR A;HALL A;HOWE AC;PELL J;HOFMANN PR;ZHU X;GREGORY TR;LOUKAS A;WILLIAMS BA;ANTOSHECHKIN I;BROWN PW;GASSER RB,(2013),NA                                                        
+## 10 LI S;KHAFIPOUR E;KRAUSE DO;KROEKER JC;GOZHO GN;PLAIZIER JC,(2012),NA                                                                                                                                                         
+##     TC TCperYear
+## 1  176      35.2
+## 2   95      23.8
+## 3   87      17.4
+## 4   79      15.8
+## 5   74      14.8
+## 6   73      14.6
+## 7   72      14.4
+## 8   71      14.2
+## 9   67      16.8
+## 10  65      13.0
+## 
+## 
+## Most Productive Countries
+## 
+##    Country   Articles    Freq
+## 1  CANADA        1239 0.73706
+## 2  USA            136 0.08090
+## 3  CHINA           27 0.01606
+## 4  BRAZIL          22 0.01309
+## 5  IRAN            18 0.01071
+## 6  AUSTRALIA       17 0.01011
+## 7  GERMANY         16 0.00952
+## 8  ENGLAND         15 0.00892
+## 9  FRANCE          13 0.00773
+## 10 BELGIUM         12 0.00714
+## 
+## 
+## Total Citations per Country
+## 
+##       Country      Total Citations Average Article Citations
+## 1  CANADA                     8768                     7.077
+## 2  USA                        1119                     8.228
+## 3  GERMANY                     248                    15.500
+## 4  AUSTRALIA                   195                    11.471
+## 5  ENGLAND                     176                    11.733
+## 6  IRELAND                     131                    11.909
+## 7  NETHERLANDS                 111                    12.333
+## 8  FRANCE                      108                     8.308
+## 9  AUSTRIA                     106                    11.778
+## 10 BRAZIL                      101                     4.591
+## 
+## 
+## Most Relevant Sources
+## 
+##                                                                      Sources       
+## 1  JOURNAL OF DAIRY SCIENCE                                                        
+## 2  JOURNAL OF ANIMAL SCIENCE                                                       
+## 3  PLOS ONE                                                                        
+## 4  PREVENTIVE VETERINARY MEDICINE                                                  
+## 5  CANADIAN VETERINARY JOURNAL-REVUE VETERINAIRE CANADIENNE                        
+## 6  THERIOGENOLOGY                                                                  
+## 7  CANADIAN JOURNAL OF ANIMAL SCIENCE                                              
+## 8  CANADIAN JOURNAL OF VETERINARY RESEARCH-REVUE CANADIENNE DE RECHERCHEVETERINAIRE
+## 9  VETERINARY MICROBIOLOGY                                                         
+## 10 VETERINARY CLINICS OF NORTH AMERICA-FOOD ANIMAL PRACTICE                        
+##    Articles
+## 1       328
+## 2        67
+## 3        66
+## 4        53
+## 5        46
+## 6        45
+## 7        38
+## 8        24
+## 9        23
+## 10       20
+## 
+## 
+## Most Relevant Keywords
+## 
+##    Author Keywords (DE)      Articles Keywords-Plus (ID)     Articles
+## 1           CATTLE                100       CATTLE                353
+## 2           DAIRY COW              94       PREVALENCE            137
+## 3           ANIMAL WELFARE         54       DAIRY-COWS            121
+## 4           MASTITIS               44       COWS                  104
+## 5           BEEF CATTLE            41       ESCHERICHIA-COLI       92
+## 6           DAIRY CATTLE           40       RISK-FACTORS           90
+## 7           BOVINE                 28       INFECTION              88
+## 8           DAIRY COWS             27       CALVES                 82
+## 9           PARATUBERCULOSIS       26       BEEF-CATTLE            77
+## 10          ESCHERICHIA COLI       25       PERFORMANCE            74</code></pre>
+<p>Thanks to <code>stringr</code> package, I could fix the address information of the authors to get the following graphs.</p>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-7-1.png" alt="Evolution of publications in cattle health research." width="672" />
+<p class="caption">
+Figure 1: Evolution of publications in cattle health research.
+</p>
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-8-1.png" alt="The 10 most productive research groups." width="672" />
+<p class="caption">
+Figure 2: The 10 most productive research groups.
+</p>
+</div>
+<p>Note that 2017 is not over yet, so explaining the drop in the number of publications in the first figure.</p>
+<p>The most productive group is the University of Guelph, closely followed by Agriculture and Agri-Food Canada.</p>
+<div id="measure-of-collaboration" class="section level2">
+<h2>Measure of collaboration</h2>
+<p>Dominance factor (DF) can be computed, according to the formula of <a href="http://www.collnet.de/Berlin-2008/KumarWIS2008cir.pdf">Kumar &amp; Kumar, 2008</a>. This factor gives an indication of the collaboration in the field, as a ratio of the number of multi-authored articles in which a scholar appears as first author to the total number of multi-authored articles. A value of less than 0.5 reflects a good sign for collaboration; high value shows more dominance of author as first author.</p>
+<pre class="r"><code>DF &lt;- dominance(results, k = 10)
+DF</code></pre>
+<pre><code>##                    Dominance Factor Multi Authored First Authored
+## BUCZINSKI,S              0.38461538             26             10
+## STANFORD,K               0.32142857             28              9
+## DEVRIES,TJ               0.12903226             31              4
+## VON,KEYSERLINGKMAG       0.08823529             34              3
+## WEARY,DM                 0.04878049             41              2
+## DUFFIELD,TF              0.03448276             29              1
+## LESLIE,KE                0.03333333             30              1
+## BARKEMA,HW               0.03174603             63              2
+## DE,BUCKJ                 0.03125000             32              1
+## MCALLISTER,TA            0.01515152             66              1
+##                    Rank by Articles Rank by DF
+## BUCZINSKI,S                      10          1
+## STANFORD,K                        9          2
+## DEVRIES,TJ                        6          3
+## VON,KEYSERLINGKMAG                4          4
+## WEARY,DM                          3          5
+## DUFFIELD,TF                       8          6
+## LESLIE,KE                         7          7
+## BARKEMA,HW                        2          8
+## DE,BUCKJ                          5          9
+## MCALLISTER,TA                     1         10</code></pre>
+<p>All authors in the field look like they’re quite collaborative. Buczinski (Université de Montréal) and Stanford (Alberta Agriculture &amp; Forestry) dominate their research team because they appear as first authors in a large proportion of their papers (10 out of 26 for Buczinski and 9 out of 28 for Stanford).</p>
+</div>
+<div id="authors-h-index" class="section level2">
+<h2>Authors’ h-index</h2>
+<p>The h-index tries to measure both the number of publications a researcher produced (“quantity”) and their impact on other publications (“quality”). Here’s my own and the ones from the 30 most productive authors, in this collection.</p>
+<pre class="r"><code>indices &lt;- Hindex(M, authors = &quot;HAINE D&quot;, sep = &quot;;&quot;, years = 10)
+## Haine&#39;s impact indices:
+indices$H</code></pre>
+<pre><code>##    Author h_index g_index m_index TC NP
+## 1 HAINE D       3       5     0.5 31  5</code></pre>
+<pre class="r"><code># Haine&#39;s citations
+indices$CitationList</code></pre>
+<pre><code>## [[1]]
+##                          Authors                        Journal Year
+## 1 FAUTEUX V;BOUCHARD E;HAINE D;S       JOURNAL OF DAIRY SCIENCE 2015
+## 5 HAINE D;DELGADO H;CUE R;SEWALE PREVENTIVE VETERINARY MEDICINE 2017
+## 3 PARADIS ME;HAINE D;GILLESPIE B       JOURNAL OF DAIRY SCIENCE 2012
+## 2 VEH KA;KLEIN RC;STER C;KEEFE G       JOURNAL OF DAIRY SCIENCE 2015
+## 4 REYHER KK;HAINE D;DOHOO IR;REV       JOURNAL OF DAIRY SCIENCE 2012
+##   TotalCitation
+## 1             0
+## 5             0
+## 3             7
+## 2             8
+## 4            16</code></pre>
+<pre class="r"><code>## h-index of the first 30 most productive authors in this collection
+authors=gsub(&quot;,&quot;, &quot; &quot;, names(results$Authors)[1:30])
+indices &lt;- Hindex(M, authors, sep = &quot;;&quot;, years = 50)
+indices$H</code></pre>
+<pre><code>##                Author h_index g_index   m_index  TC NP
+## 1       MCALLISTER TA      12      19 2.0000000 502 66
+## 2          BARKEMA HW      13      18 2.1666667 465 63
+## 3            WEARY DM      10      14 1.6666667 293 41
+## 4          LEBLANC SJ      13      21 2.1666667 487 40
+## 5             ORSEL K      10      14 1.6666667 266 35
+## 6  VON KEYSERLINGKMAG       0       0 0.0000000   0  0
+## 7            DE BUCKJ       0       0 0.0000000   0  0
+## 8          DEVRIES TJ       7       9 1.1666667 144 31
+## 9           LESLIE KE      11      16 1.8333333 295 30
+## 10        DUFFIELD TF       7      13 1.1666667 183 29
+## 11          KELTON DF      10      15 1.6666667 266 29
+## 12         STANFORD K       7      11 1.1666667 160 28
+## 13        BUCZINSKI S       7      10 1.1666667 141 26
+## 14          MIGLIOR F      10      15 1.6666667 253 26
+## 15      DE PASSILLEAM       0       0 0.0000000   0  0
+## 16           RUSHEN J      10      14 1.6666667 238 25
+## 17          AMETAJ BN       8      11 1.3333333 148 22
+## 18          COLAZO MG       7      10 1.1666667 106 22
+## 19      BEAUCHEMIN KA      10      16 1.6666667 271 21
+## 20           KEEFE GP       7      10 1.1666667 124 20
+## 21         CHAPINAL N      10      17 1.6666667 306 19
+## 22            GUAN LL       8      13 1.3333333 187 19
+## 23          PENNER GB       8      14 1.3333333 218 19
+## 24             WANG Y       8      10 1.3333333 131 20
+## 25           DUFOUR S       7      11 1.1666667 144 18
+## 26        KASTELIC JP       8      10 1.3333333 121 17
+## 27              OBA M       8      12 1.3333333 166 17
+## 28           PEARL DL       5       7 0.8333333  60 17
+## 29            DUBUC J       6      10 1.0000000 105 16
+## 30             WOLF R       8      11 1.6000000 143 16</code></pre>
+<p>My h-index is 3 (all time 11 on <a href="https://scholar.google.com/citations?user=KFeLZyIAAAAJ&amp;hl=en">Google Scholar</a>, and I have 3 other papers in press, not yet included in this collection, and you need some time for papers to get cited). Barkema, Orsel (University of Calgary), LeBlanc, Leslie, Kelton, Chapinal (University of Guelph), McAllister, Rushen, Beauchemin (Agriculture and Agri-Food Canada), Weary (University of British Columbia), and Miglior (Canadian Dairy Network) have the largest h-index among the top 30 most productive authors. However we see h-index of zero for Von Keyserlingk (University of British Columbia), De Buck (University of Calgary), and De Passillé (Agriculture and Agri-Food Canada). My guess is that their name is wrongly filtered, resulting in a wrong computation of their h-index (Von Keyserlingk and De Buck have 42 and 21 on Google Scholar, respectively. Couldn’t find De Passillé).</p>
+</div>
+<div id="bilbiometric-network-matrices" class="section level2">
+<h2>Bilbiometric network matrices</h2>
+<p>This is where it’s getting interesting: analysing the networks based on the attributes of the bibliometric data.</p>
+<div id="authors-collaboration" class="section level3">
+<h3>Authors’ collaboration</h3>
+<div class="figure"><span id="fig:unnamed-chunk-11"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-11-1.png" alt="Authors' collaboration." width="1152" />
+<p class="caption">
+Figure 3: Authors’ collaboration.
+</p>
+</div>
+<p>Different communities appear, around 2 PIs: Barkema and McAllister (remember from above, these two are very productive and have a low DF). Barkema is centered across 2 communities (in green and yellow). Interestingly, the blue community is mainly from eastern Canada (Université de Montréal, University of Prince Edward Island), while the green one is more western (University of Guelph, University of Calgary, University of British Columbia). In both case, authors are working on a variety of topics: clinical diseases (i.e. Fecteau, Francoz), epidemiology (i.e. Dohoo, Pearl), production (LeBlanc), animal sciences (Pellerin, Vasseur), animal welfare (De Vries, Von Keyserlingk), etc. But in most cases, it looks like they’re doing field work. While around McAllister, it looks like it’s more lab work. This would need digging deeper, but it’s a rough first approximation.</p>
+</div>
+<div id="organisations-collaboration" class="section level3">
+<h3>Organisations’ collaboration</h3>
+<div class="figure"><span id="fig:unnamed-chunk-12"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-12-1.png" alt="Organisations' collaboration." width="1152" />
+<p class="caption">
+Figure 4: Organisations’ collaboration.
+</p>
+</div>
+<p>Collaboration is mainly realised between Canadian institutions, with only one from Europe (University of Ghent, Belgium), and 6 from the US (Kansas State University, Colorado State University, University of Florida, University of California in Davis, Iowa State University, and University of Minnesota).</p>
+</div>
+<div id="author-keyword-co-occurrences" class="section level3">
+<h3>Author keyword co-occurrences</h3>
+<div class="figure"><span id="fig:unnamed-chunk-13"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-13-1.png" alt="Author keyword co-occurrences." width="1152" />
+<p class="caption">
+Figure 5: Author keyword co-occurrences.
+</p>
+</div>
+<p>According to keywords provided by the authors, we find the usual research themes in cattle health: mastitis, welfare, lameness, Johne’s, BRD.</p>
+</div>
+<div id="co-word-analysis-conceptual-structure-of-the-field" class="section level3">
+<h3>Co-word analysis: conceptual structure of the field</h3>
+<p>Here we’re mapping the conceptual structure of the field using the word co-occurrences in the bibliographic collection, by performing a MCA and K-means clustering to identify clusters of documents which express common concepts.</p>
+<div class="figure"><span id="fig:unnamed-chunk-14"></span>
+<img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-14-1.png" alt="Conceptual structure of the field." width="1152" />
+<p class="caption">
+Figure 6: Conceptual structure of the field.
+</p>
+</div>
+<p>Four fields emerge, one specific to paratuberculosis, one for contagious diseases, one for production diseases and performances, and one probably for genetics.</p>
+</div>
+</div>
+<div id="final-word" class="section level2">
+<h2>Final word</h2>
+<p>This was a rough tentative of exploring Canadian research on cattle health.</p>
+<p>Eh! in Canada, you’re either in the gang of Barkema, or McAllister… 😉</p>
+</div>

@@ -1,0 +1,913 @@
+---
+title: Scientific collaboration patterns in cattle health research in Canada
+author: Denis Haine
+date: '2017-10-11'
+slug: dairyres-rmd
+categories: ['R', 'epidemiology']
+tags: ["dairy", "cow", "#rstats", "epidemiology"]
+---
+
+I was curious to see if I could identify some patterns of collaboration and
+research topics in cow health research made in Canada.
+For this, I'm trying the R package
+[`bibliometrix`](https://cran.r-project.org/package=bibliometrix "bibliometrix").
+This package allows quantitative research in scientometrics and bibliometrics by
+providing different routines for importing bibliographic data from
+[Scopus](https://www.scopus.com/ "Scopus") and [ISI Web of
+Knowledge](http://www.webofknowledge.com/ "Web of Knowledge") databases, and
+performing various bibliometric analyses.
+The [Bibliometrix website](http:\\www.bibliometrix.com) provides a good tutorial
+that I will mainly follow, with the sole objective to satisfy my curiosity and
+have fun!
+
+As explained in the `bibliometrix` tutorial, bibliographic data were retrieved
+from ISI Web of Knowledge, Web of Science Core Collection database.
+The following descriptors of thematics were used:
+
+> TS=(ruminant OR cow OR bovine OR cattle OR calf)  AND PY=(2012-2017) AND TS=(coccidiosis
+OR Pasteurella OR mastitis OR parvovirus OR PPV OR mummification OR
+stillbirth OR "foot-and-mouth disease" OR FMD "Aphtous fever" OR pneumonia OR
+streptococci OR "E. coli" OR tuberculosis OR brucellosis OR salmonellosis OR
+salmonella OR anthrax OR babesiosis OR piroplasmosis OR "tick fever" OR "red
+water" OR babesia OR sarcocystosis OR sarcosystis OR toxoplasmosis OR toxoplasma
+OR streptococcus OR clostridium OR influenza OR leptospirosis OR mycoplasma OR
+rotavirus OR BSE OR prion OR TSE OR "mad cow" OR metritis OR encephalitis OR
+biotin OR "energy balance" OR "drug resistance" OR mannheimia OR
+escherichia-coli OR "bovine respiratory disease" OR "subclinical ketosis" OR
+beta-hydroxybutyrate OR campylobacter OR epidemic OR "viral hemorrhagic fever"
+OR O157H7 OR lameness OR diarrhea OR "necrotic enteritis" OR "zoonotic pathogen"
+OR zoonosis OR q-fever OR "animal welfare" OR giardia OR paratuberculosis OR
+coxiella OR coxiellosis OR "Johne's disease" OR "uterine disease" OR
+endometritis OR reproductive-performance OR "west nile virus" OR PrPSc OR
+cesarean-section OR aureus OR staphylococcus OR epidermidis OR eimeria OR
+coccidia OR haemonchus OR "metabolic disease" OR ketosis OR "O157:H7" OR
+foot-and-mouth OR pseudomonas OR "airborne transmission" OR "foodborne
+transmission" OR "gastrointestinal nematodes" OR ixodes OR "tick-borne disease"
+OR borreliosis OR "failure of transfer of passive immunity" OR mycotoxins OR
+"antimicrobial resistance" OR enterococcus OR "foodborne pathogens" OR "somatic
+cell count" OR agalactiae OR mastitis OR "staphylococcus aureus" OR "MRSA" OR
+uberis OR "subacute ruminal acidosis" OR "pregnancy loss" OR fertility OR
+anovulation OR "udder health" OR "bovine spongiform encephalopathy" OR scrapie
+OR "bulk milk somatic cell count" OR "downer cow syndrome" OR "milk fever" OR
+mycobacterium OR listeria OR rotavirus OR "intramammary infection" OR parasitism
+OR borrelia OR bluetongue OR BVD OR "bovine viral diarrhea" OR abortion OR
+vibriosis OR "cystic ovaries" OR neosporosis OR "repeat breeding syndrome" OR
+"retained fetal membranes" OR schmallenberg OR acetonaemia OR "fatty liver" OR
+acidosis OR "calf scour" OR IBR OR "digital dermatitis" OR "foot rot" OR
+"epizootic hemorrhagic disease" OR lice OR mange OR ringworm OR "sole ulcer" OR
+"displaced abomasum" OR botulism OR rabies) AND LA=(English OR French) AND
+DT=(Article OR Review) AND CU=(Canada)
+
+i.e. articles or reviews published between 2012 and now (October 2017), in
+English or French, under the SCI-EXPANDED citation index, for Canada.
+The ISI website only allows to export 500 records at a time.
+So several files were exported in bibtex format, then merged together and their
+leading white spaces removed thanks to a small bash script:
+
+```{shell, eval=FALSE}
+cat *.bib >> records.bib
+sed "s/^[ \t]*//" -i records.bib
+```
+
+Then we can load the R package and read the data!
+
+```{r}
+library(bibliometrix)
+```
+
+```{r, include=FALSE}
+D <- readFiles("~/workspace/h/haine/SciCoPatt/data/records.bib")
+M <- convert2df(D, dbsource = "isi", format = "bibtex")
+library(tidyverse)
+library(ggthemes)
+library(stringr)
+
+results <- biblioAnalysis(M, sep = ";")
+
+address <- as.data.frame(table(results$FirstAffiliation))
+address$reprint_author <- gsub("\\(.*$", "", address[, 1])
+address$org <- sapply(strsplit(as.character(address[, 1]), ','), "[", 3)
+address$org <- trimws(address$org, which = "left")
+
+address$country <- str_extract(address[, 1], '\\b[^,]+$')
+address$country2 <- str_extract(address[, 1], '\\b[^( )]+$')
+address$country <- gsub("[.]", "", address$country)
+address$country2 <- gsub("[.]", "", address$country2)
+address$country <- with(address, ifelse(country2 == "USA", "USA", country))
+address$country <- with(address, ifelse(country == "ENGLAND" |
+                                        country == "NORTH IRELAND" |
+                                        country == "SCOTLAND" |
+                                        country == "WALES", "UNITED KINGDOM", country))
+address$country <- with(address, ifelse(country == "REUNION" |
+                                        country == "GUADELOUPE", "FRANCE", country))
+
+address$org <- with(address, ifelse(org == "ELLINBANK", "ELLINBANK CTR", org))
+address$org <- with(address, ifelse(org == "INST TROP MED" & country == "BELGIUM",
+                                    "INST TROP MED ANTWERP", org))
+address$org <- with(address, ifelse(org == "NATL DAIRY RES INST",
+                                    "NATL DAIRY RES INST HARYANA", org))
+address$org <- with(address, ifelse(org == "UNIV MED CTR",
+                                    "UNIV MED CTR GOTTINGEN", org))
+address$org <- with(address, ifelse(org == "NATL RES CTR",
+                                    "NATL RES CTR CAIRO", org))
+address$org <- with(address, ifelse(org == "EST EL ENCUENTRO RES \\& EXTENS FARM RUMINANT NUTR",
+                                    "EST EL ENCUENTRO RES \\& EXTENS FARM RUMINANT NUTR BUENOS AIRES", org))
+address$org <- with(address, ifelse(org == "CTR RIC PROD FORAGGERE \\& LATTIERO CASEARIE SEDE D",
+                                    "CTR RIC PROD FORAGGERE \\& LATTIERO CASEARIE", org))
+address$org <- with(address, ifelse(org == "VIA PORCELLASCO 7",
+                                    "CTR RIC PROD FORAGGERE \\& LATTIERO CASEARIE", org))
+address$org <- with(address, ifelse(org == "VET DISPENSARY",
+                                    "VET DISPENSARY KERALA", org))
+address$org <- with(address, ifelse(org == "UNIV FED MINAS GERAIS MICROBIOL",
+                                    "UNIV FED MINAS GERAIS", org))
+address$org <- with(address, ifelse(org == "SWEDISH UNIV AGR SCI SLU UPPSALA",
+                                    "SWEDISH UNIV AGR SCI", org))
+address$org <- with(address, ifelse(org == "SWEDISH UNIV AGR SCI SLU",
+                                    "SWEDISH UNIV AGR SCI", org))
+address$org <- with(address, ifelse(org == "NATL VET LAB" & country == "PAKISTAN",
+                                    "NATL VET LAB PAKISTAN", org))
+address$org <- with(address, ifelse(org == "NATL VET LAB" & country == "LITHUANIA",
+                                    "NATL VET LAB LITHUANIA", org))
+address$org <- with(address, ifelse(org == "POB 80216",
+                                    "KING ABDULAZIZ UNIV", org))
+
+address$org <- with(address, ifelse(org == "DOCKLITZER TOR 11",
+                                    "", org))
+address$org <- with(address, ifelse(org == "UNIV AGR KRAKOW",
+                                    "AGR UNIV KRAKOW", org))
+address$org <- with(address, ifelse(org == "18830 RD 112",
+                                    "UNIV CALIF DAVIS", org))
+address$org <- with(address, ifelse(org == "UL GLEBOKA 30",
+                                    "", org))
+address$org <- with(address, ifelse(org == "ARS",
+                                    "USDA ARS", org))
+
+address$org <- with(address, ifelse(org == "ECOLE NATL VET" & (reprint_author == "ADJOU, KT" | reprint_author == "CARSTANJEN, B" | reprint_author == "GRIMARD, B" | reprint_author == "GUILLOT, J"),
+                                    "ENV MAISONS ALFORT", org))
+address$org <- with(address, ifelse(org == "UMR MYCOPLASMOSES RUMINANTS ANSES VETAGRO SUP VET" | org == "ENV ALFORT" | org == "ENV DALFORT" | org == "ENVA",
+                                    "ENV MAISONS ALFORT", org))
+address$org <- with(address, ifelse(org == "ECOLE NATL VET" & (reprint_author == "BAREILLE, N" | reprint_author == "BEAUDEAU, F" | reprint_author == "LE BIZEC, B"),
+                                    "ECOLE NATL VET NANTES", org))
+address$org <- with(address, ifelse(org == "ECOLE NATL VET" & (reprint_author == "CAVRET, S" | reprint_author == "FREMAUX, B"),
+                                    "ECOLE NATL VET MARCY LETOILE", org))
+
+address$org <- with(address, ifelse(org == "BIOFORSK",
+                                    "BIOFORSK NORWEGIAN INST AGR \\& ENVIRONM RES", org))
+address$org <- with(address, ifelse(org == "RUA SANTA LUZIA 206",
+                                    "", org))
+address$org <- with(address, ifelse(org == "KATHOLIEKE UNIV LEUVEN BIOSYST MEBIOS KU LEUVEN",
+                                    "KATHOLIEKE UNIV LEUVEN", org))
+address$org <- with(address, ifelse(org == "COLL VET MED" & country == "USA",
+                                    "KANSAS STATE UNIV", org))
+address$org <- with(address, ifelse(org == "COLL VET MED" & country == "IRAQ",
+                                    "BAGHDAD UNIV", org))
+address$org <- with(address, ifelse(org == "COLL VET MED" & country == "INDIA",
+                                    "PUNJAB UNIV", org))
+address$org <- with(address, ifelse(org == "COLL VET MED" & country == "IRAN",
+                                    "TEHRAN UNIV", org))
+address$org <- with(address, ifelse(org == "NATL VET INST" & country == "SWEDEN",
+                                    "NATL VET INST SWEDEN", org))
+address$org <- with(address, ifelse(org == "NATL VET INST" & country == "NORWAY",
+                                    "NATL VET INST NORWAY", org))
+address$org <- with(address, ifelse(org == "NATL VET INST" & country == "ETHIOPIA",
+                                    "NATL VET INST ETHIOPIA", org))
+
+address$org <- with(address, ifelse(org == "BP 12",
+                                    "", org))
+address$org <- with(address, ifelse(org == "1945 INOKASHIRA",
+                                    "SHIZUOKA PREF RES INST ANIM IND", org))
+address$org <- with(address, ifelse(org == "POB 14155-6453",
+                                    "UNIV TEHRAN", org))
+address$org <- with(address, ifelse(org == "VET COLL \\& RES INST",
+                                    "VET COLL \\& RES INST INDIA", org))
+
+address$org <- with(address, ifelse(org == "POB 80283",
+                                    "", org))
+
+address$org <- with(address, ifelse(org == "CARRETERA TOLUCA TEJUPILCO KM 67-5",
+                                    "", org))
+address$org <- with(address, ifelse(org == "CALZ DEL HUESO 1100 COL",
+                                    "", org))
+address$org <- with(address, ifelse(org == "SLU",
+                                    "SWEDISH UNIV AGR SCI", org))
+address$org <- with(address, ifelse(org == "FAC VET" & (reprint_author == "ABUELO, A" | reprint_author == "DIEGUEZ, FJ"),
+                                    "UNIV SANTIAGO", org))
+address$org <- with(address, ifelse(org == "FAC VET" & country == "SLOVENIA",
+                                    "UNIV LJUBLJANA", org))
+address$org <- with(address, ifelse(org == "FAC VET" & country == "URUGUAY",
+                                    "UNIV MONTEVIDEO", org))
+address$org <- with(address, ifelse(org == "FAC VET" & country == "ITALY",
+                                    "UNIV TORINO", org))
+address$org <- with(address, ifelse(org == "VET RES INST",
+                                    "VET RES INST BRNO", org))
+
+address$org <- with(address, ifelse(org == "COLL AGR \\& VET MED",
+                                    "COLL AGR \\& VET MED QASSIM", org))
+
+address$org <- with(address, ifelse(org == "2265G ANTHONY HALL",
+                                    "MICHIGAN STATE UNIV", org))
+
+address$org <- with(address, ifelse(org == "VETERINARPL 1",
+                                    "UNIV VET MED VIENNA", org))
+
+address$org <- with(address, ifelse(org == "ALBERTA AGR FOOD",
+                                    "ALBERTA AGR \\& FOOD", org))
+address$org <- with(address, ifelse(org == "SUITE 204",
+                                    "ALBERTA AGR \\& RURAL DEV", org))
+
+address$org <- with(address, ifelse(org == "224 TRIKALON STR",
+                                    "UNIV THESSALY", org))
+address$org <- with(address, ifelse(org == "POB 8146 DEP",
+                                    "NATL VET INST NORWAY", org))
+
+address$org <- with(address, ifelse(org == "COLL VET SCI",
+                                    "COLL VET SCI ANDHRA PRADESH", org))
+address$org <- with(address, ifelse(org == "FAC AGR" & country == "CROATIA",
+                                    "FAC AGR OSIJEK", org))
+address$org <- with(address, ifelse(org == "FAC AGR" & country == "ITALY" & (reprint_author == "CALAMARI, IL"),
+                                    "FAC AGR PIACENZA", org))
+address$org <- with(address, ifelse(org == "FAC AGR" & country == "ITALY" & (reprint_author == "SEVI, A"),
+                                    "FAC AGR FOGGIA", org))
+address$org <- with(address, ifelse(org == "FAC AGR" & country == "SERBIA" & (reprint_author == "GLAMOCLIJA, D" | reprint_author == "MALETIC, R"),
+                                    "FAC AGR BELGRADE", org))
+address$org <- with(address, ifelse(org == "FAC AGR" & country == "SERBIA" & (reprint_author == "KUCEVIC, D" | reprint_author == "STEVANCEVIC, M" | reprint_author == "VIDOVIC, V"),
+                                    "FAC AGR NOVI SAD", org))
+
+address$org <- with(address, ifelse(org == "NATL AGR RES CTR" & country == "PAKISTAN",
+                                    "NATL AGR RES CTR ISLAMABAD", org))
+address$org <- with(address, ifelse(org == "NATL AGR RES CTR" & country == "JAPAN" & reprint_author == "AOKI, M",
+                                    "NATL AGR RES CTR HOKKAIDO REG", org))
+address$org <- with(address, ifelse(org == "NATL AGR RES CTR" & country == "JAPAN" & reprint_author == "KAMIYA, M",
+                                    "NATL AGR RES CTR KUMAMOTO", org))
+
+address$org <- with(address, ifelse(org == "POB 12",
+                                    "HEBREW UNIV JERUSALEM", org))
+address$org <- with(address, ifelse(org == "PASSAGE DEPORTES 2",
+                                    "UNIV LIEGE", org))
+address$org <- with(address, ifelse(org == "PRIVATE BAG 3123",
+                                    "AGRESEARCH", org))
+
+address$org <- with(address, ifelse(org == "UAEM",
+                                    "UNIV AUTONOMA ESTADO MEXICO", org))
+address$org <- with(address, ifelse(org == "NEIKER TECN",
+                                    "NEIKER TECNALIA", org))
+address$org <- with(address, ifelse(org == "LA SALLE UNIV",
+                                    "UNIV LA SALLE BOGOTA", org))
+address$org <- with(address, ifelse(org == "NATL INST HLTH SCI",
+                                    "NATL INST HLTH SCI TOKYO", org))
+address$org <- with(address, ifelse(org == "98 8TH ALLEY",
+                                    "UNIV TEHRAN", org))
+
+address$org <- with(address, ifelse(org == "1 BEICHEN WEST RD",
+                                    "CHINESE ACAD SCI", org))
+address$org <- with(address, ifelse(org == "1 PK DR BUNDOORA",
+                                    "", org))
+address$org <- with(address, ifelse(org == "1 SHIELDS AVE",
+                                    "UNIV CALIF DAVIS", org))
+address$org <- with(address, ifelse(org == "1 UNIV ARKANSAS",
+                                    "UNIV ARKANSAS", org))
+address$org <- with(address, ifelse(org == "1-1 ROKKODAI CHO NADA",
+                                    "KOBE UNIV", org))
+address$org <- with(address, ifelse(org == "1-1-1 YAYOI",
+                                    "TOKYO UNIV", org))
+address$org <- with(address, ifelse(org == "1001 DONNA CT",
+                                    "", org))
+address$org <- with(address, ifelse(org == "10A EPIMENIDOU STR",
+                                    "", org))
+address$org <- with(address, ifelse(org == "111 CECILIO URBINA",
+                                    "", org))
+address$org <- with(address, ifelse(org == "1110 SHIMOGATOU",
+                                    "YAMANASHI UNIV", org))
+
+address$org <- with(address, ifelse(org == "1122 HEXAM ST" | org == "122 A HEXAM ST" | org == "122A HEXAM ST" | org == "125 LOYALIST DR" | org == "13 FERNDALE" | org == "130A JALAN AWAN JAWA" | org == "15-107" | org == "151",
+                                    "", org))
+address$org <- with(address, ifelse(org == "1207 W GREGORY DR",
+                                    "UNIV ILLINOIS", org))
+address$org <- with(address, ifelse(org == "1287 ANTHONY HALL",
+                                    "MICHIGAN STATE UNIV", org))
+address$org <- with(address, ifelse(org == "135 CALL HALL",
+                                    "KANSAS STATE UNIV", org))
+address$org <- with(address, ifelse(org == "UNIV MINNESOTA TWIN CITIES" | org == "1365 GORTNER AVE" | org == "136F ANDREW BOSS LAB MEAT SCI",
+                                    "UNIV MINNESOTA", org))
+address$org <- with(address, ifelse(org == "138 BOSZORMENYI U",
+                                    "UNIV DEBRECEN", org))
+address$org <- with(address, ifelse(org == "1400 NORTH CAMPUS DR",
+                                    "S DAKOTA STATE UNIV", org))
+address$org <- with(address, ifelse(org == "1523 CENTENNIAL BLVD",
+                                    "N DAKOTA STATE UNIV", org))
+address$org <- with(address, ifelse(org == "UNIV N DAKOTA",
+                                    "N DAKOTA STATE UNIV", org))
+address$org <- with(address, ifelse(org == "159 IND N RD",
+                                    "SHANDONG ACAD AGR SCI", org))
+address$org <- with(address, ifelse(org == "SHANDONG AGR \\& ENG UNIV" | org == "SHANDONG AGR UNIV" | org == "159-1 IND N RD",
+                                    "SHANDONG ACAD AGR SCI", org))
+address$org <- with(address, ifelse(org == "AGR \\& AGR FOOD CANADA",
+                                    "AGR \\& AGRI FOOD CANADA", org))
+address$org <- with(address, ifelse(org == "ZOETIS UK LTD",
+                                    "ZOETIS INC", org))
+address$org <- with(address, ifelse(org == "ZIMBABWE.",
+                                    "INT CROPS RES INST", org))
+address$org <- with(address, ifelse(org == "ZHEJIANG A\\&F UNIV" | org == "ZHEJIANG ACAD AGR SCI",
+                                    "ZHEJIANG UNIV", org))
+address$org <- with(address, ifelse(org == "YILDIZ TEKN UNIV",
+                                    "YILDIZ TECH UNIV", org))
+address$org <- with(address, ifelse(org == "WROCLAW UNI ENVIRONM \\& LIFE SCI" | org == "WROCLAW UNIV LIFE SCI" | org == "WROCLAW UNIV TECHNOL",
+                                    "WROCLAW UNIV ENVIRONM \\& LIFE SCI", org))
+address$org <- with(address, ifelse(org == "WHO",
+                                    "WORLD HLTH ORG", org))
+address$org <- with(address, ifelse(org == "WESTPOMERANIAN UNIV TECHNOL SZCZECIN" | org == "WESTPOMMERSCHE TECH UNIV SZCZECIN" | org == "WESTPOMERANIAN UNIV TECHNOL" | org == "WEST POMERANIAN UNIV TECHNOL SZCZECIN",
+                                    "WEST POMERANIAN UNIV TECHNOL", org))
+address$org <- with(address, ifelse(org == "WESTERN CAPE",
+                                    "WESTERN CAPE DEPT AGR", org))
+address$org <- with(address, ifelse(org == "WASHINGTON UNIV",
+                                    "WASHINGTON STATE UNIV", org))
+address$org <- with(address, ifelse(org == "YALELAAN 7" | org == "UNIV MED CTR UTRECHT" | org == "FAC DIERGENEESKUNDE UTRECHT" | org == "VET FAC UTRECHT",
+                                    "UNIV UTRECHT", org))
+address$org <- with(address, ifelse(org == "UNIWERSTET PRZYRODNICZY WROCLAWIU" | org == "UNIWERSYTET PRZYRODNICZY LUBLINIE" | org == "UNIWERSYTET PRZYRODNICZY WE WROCLAWIU" | org == "UNIWERSYTET PRZYRODNICZY WROCLAWIU" | org == "WOLYNSKA STR 33",
+                                    "UNIWERSYTET PRZYRODNICZY", org))
+address$org <- with(address, ifelse(org == "WESTERN COLL VET MED",
+                                    "UNIV SASKATCHEWAN", org))
+address$org <- with(address, ifelse(org == "WARSAW UNIV TECHNOL" | org == "WARSAW UNIV LIFE SCI" | org == "WARSAW UNIV LIFE SCI SGGW" | org == "WARSAW UNIV LIFE SCI WULS SGGW",
+                                    "WARSAW UNIV", org))
+address$org <- with(address, ifelse(org == "WALTON MANOR" | org == "MSD ANIM HLTH GMBH",
+                                    "MSD ANIM HLTH", org))
+
+address$org <- with(address, ifelse(org == "WALLOON AGR RES CTR CRA W",
+                                    "WALLOON AGR RES CTR", org))
+address$org <- with(address, ifelse(org == "WAGENINGEN INST ANIM SCI" | org == "WAGENINGEN LIVESTOCK RES" | org == "WAGENINGEN UNIV \\& RES" | org == "WAGENINGEN UNIV \\& RES CTR" | org == "WAGENINGEN UNIV \\& RES CTR CVI LELYSTAD" | org == "WAGENINGEN UNIV \\& RES CTR WUR" | org == "WAGENINGEN UNIV RES CTR" | org == "WAGENINGEN UR" | org == "WAGENINGEN UR LIVESTOCK RES" | org == "WAGENINGEN UR WAGENINGEN LIVESTOCK RES" | org == "UNIV WAGENINGEN" | org == "UNIV WAGENINGEN \\& RES CTR" | org == "CENT VET INST" | org == "CENT VET INST WAGENINGEN UR" | org == "CENT VET INST WAGENMGEN UR",
+                                    "WAGENINGEN UNIV", org))
+address$org <- with(address, ifelse(org == "WALDECK",
+                                    "UNIV FARM ANIM PRACTICE", org))
+
+address$org <- with(address, ifelse(org == "W VIRGINIA SCH MED",
+                                    "W VIRGINIA UNIV", org))
+address$org <- with(address, ifelse(org == "W TEXAS A\\&M UNIV",
+                                    "TEXAS A\\&M UNIV", org))
+address$org <- with(address, ifelse(org == "W POMERANIAN UNIV TECHNOL SZCZECIN",
+                                    "W POMERANIAN UNIV TECHNOL", org))
+address$org <- with(address, ifelse(org == "VYZKUMNY USTAV MLEKARENSKY SRO" | org == "VYZKUMNY USTAV VET LEKARSTVI" | org == "VYZKUMNY USTAV ZIVOCISNE VYROBY",
+                                    "VYZKUMNY USTAV", org))
+
+address$org <- with(address, ifelse(org == "VIRGINIA POLYTECH INST \\& STATE UNIV",
+                                    "VIRGINIA STATE UNIV", org))
+address$org <- with(address, ifelse(org == "VILNIUS STATE UNIV",
+                                    "VILNIUS UNIV", org))
+address$org <- with(address, ifelse(org == "VIA F DELPINO 1" | org == "UNIV NAPLES FEDERICO 2" | org == "UNIV NAPLES 2" | org == "VIA FEDERICO DELPINO 1",
+                                    "UNIV NAPLES FEDERICO II", org))
+address$org <- with(address, ifelse(org == "VIA FLLI ROSSELLI 107" | org == "VIA TOLARA SOPRA 50",
+                                    "UNIV BOLOGNA", org))
+address$org <- with(address, ifelse(org == "VIA S COSTANZO 4",
+                                    "UNIV PERUGIA", org))
+address$org <- with(address, ifelse(org == "VIA BRECCE BIANCHE",
+                                    "UNIV POLITECN MARCHE", org))
+address$org <- with(address, ifelse(org == "VIA SAN CAMILLO DE LELLIS",
+                                    "UNIV TUSCIA", org))
+
+address$org <- with(address, ifelse(org == "VETSUISSE FAK BERNE" | org == "VETSUISSE FAC BERNA" | org == "VETSUISSE FAK BERN",
+                                    "VETSUISSE FAC BERNE", org))
+address$org <- with(address, ifelse(org == "VETSUISSE FAC" | org == "UNIV ZURICH VETSUISSE",
+                                    "VETSUISSE FAC ZURICH", org))
+address$org <- with(address, ifelse(org == "VETMED VIENNA" | org == "VETMEDUNI VIENNA" | org == "VET UNIV VIENNA" | org == "VET MED UNIV VIENNA" | org == "VET MED UNIV WIEN" | org == "UNIV VET MED VETMEDUNI VIENNA" | org == "UNIV VET MED VIENNA" | org == "UNIV MED MED VIENNA" | org == "VET MED UNIV" | org == "VET PL 1" | org == "UNIV CLIN RUMINANTS",
+                                    "UNIV VIENNA", org))
+address$org <- with(address, ifelse(org == "VETAGRO SUP",
+                                    "VETAGRO SUP CLERMONT", org))
+address$org <- with(address, ifelse(org == "VET TEACHING HOSP" | org == "UTAD UNIV" | org == "CECAV UTAD" | org == "UNIV TRAS MONTES \\& ALTO DOURO" | org == "UNIV TRAS OS MONTES \\& ALTO DOURO",
+                                    "UTAD", org))
+address$org <- with(address, ifelse(org == "VET UNIV PERIPHERAL HOSP" | org == "VET UNIV TRAINING \\& RES CTR" | org == "VET COLL RES INST",
+                                    "TANUVAS", org))
+
+address$org <- with(address, ifelse(org == "VET LABS AGCY" | org == "VET LABS AGCY SHREWSBURY" | org == "VET LABS AGCY STAPLAKE MT" | org == "VET LABS AGCY THIRSK" | org == "VET LABS AGCY VLA SHREWSBURY" | org == "VET LABS AGCY WEYBRIDGE" | org == "VET LABS AGCY WINCHESTER" | org == "VLA LANGFORD" | org == "VLA PRESTON" | org == "VLA SHREWSBURY" | org == "VLA THIRSK",
+                                    "VLA", org))
+
+address$org <- with(address, ifelse(org == "VET MED TEACHING \\& RES CTR",
+                                    "UNIV CALIF DAVIS", org))
+address$org <- with(address, ifelse(org == "VET SCH" | org == "VET SCH \\& INRA" | org == "VET SCH NANTES" | org == "UMT CATTLE HERD HLTH CONTROL" | org == "UMT SANTE BOVINZ" | org == "UMR" | org == "UMR ONIRIS INRA 1300 BIOEPAR" | org == "UMR ONIRIS INRA1300 BIOEPAR" | org == "ENVN" | org == "ENV NANTES" | org == "ECOLE NATL VET AGROALIMENTAIRE \\& ALIMENTAT ONIRIS",
+                                    "ENV NANTES", org))
+address$org <- with(address, ifelse(org == "VET SCH TOULOUSE" | org == "UNIV TOULOUSE INPT ENVT" | org == "ENVT" | org == "ENV TOULOUSE" | org == "ECOLE NATL VET TOULOUSE",
+                                    "ENV TOULOUSE", org))
+address$org <- with(address, ifelse(org == "UNIV TOULOUSE 3",
+                                    "UNIV TOULOUSE", org))
+address$org <- with(address, ifelse(org == "UNIV THESSALIE",
+                                    "UNIV THESSALY", org))
+address$org <- with(address, ifelse(org == "UNIV TEHRAN MED SCI",
+                                    "UNIV TEHRAN", org))
+address$org <- with(address, ifelse(org == "UNIV TECNOL FED PARANA UTFPR",
+                                    "UNIV TECNOL FED PARANA", org))
+address$org <- with(address, ifelse(org == "UNIV STUDIES BARI ITALY",
+                                    "UNIV STUDY BARI", org))
+address$org <- with(address, ifelse(org == "UNIV ST CYRIL \\& METHUDIUS" | org == "UNIV SS CYRIL \\& METHODIUS" | org == "UNIV SS CYRILL \\& METHODIUS",
+                                    "UNIV ST CYRIL \\& METHODIUS", org))
+
+
+address$org <- with(address, ifelse(org == "VET INVEST CTR VIC" | org == "VET INVESTIGAT CTR",
+                                    "VET INVEST CTR", org))
+
+address$org <- with(address, ifelse(org == "VACCINE \\& INFECT DIS ORG",
+                                    "VIDO", org))
+address$org <- with(address, ifelse(org == "VET \\& AGROCHEM RES CTR CODA CERVA" | org == "VET \\& AGROCHEM RES CTR VAR CODA CERVA" | org == "VET \\& AGROCHEM RES CTR",
+                                    "VAR", org))
+address$org <- with(address, ifelse(org == "VEREINIGTE INFORMAT SYST TIERHALTUNG WV" | org == "VEREINIGTE INFORMAT SYST TIERHALTUNG WV VIT",
+                                    "VEREINIGTE INFORMAT SYST TIERHALTUNG", org))
+address$org <- with(address, ifelse(org == "VET \\& PHARMACEUT SCI BRNO",
+                                    "VET \\& PHARMACEUT UNIV BRNO", org))
+
+address$org <- with(address, ifelse(org == "USDA APHIS VS" | org == "NAA ARS USDA" | org == "USDA ARS" | org == "USDA" | org == "USDA AGR RES SERV" | org == "US ANIM \\& PLANT HLTH INSPECT SERV" | org == "USDA APHIS CTR EPIDEMIOL \\& ANIM HLTH",
+                                    "USDA", org))
+address$org <- with(address, ifelse(org == "USA",
+                                    "USAMRIID", org))
+
+address$org <- with(address, ifelse(org == "UNIV UPPSALA HOSP",
+                                    "UPPSALA UNIV", org))
+
+address$org <- with(address, ifelse(org == "UNIV WISCONSIN MADISON" | org == "UNIV WISCONSIN MADISON" | org == "MADISON" | org == "UNIV WISCONSIN",
+                                    "UW MADISON", org))
+address$org <- with(address, ifelse(org == "UNIV YAMANASHI",
+                                    "YAMANASHI UNIV", org))
+
+address$org <- with(address, ifelse(org == "UNIV WARMIA \\& MAZURY",
+                                    "UNIV WARMIA \\& MAZURIA", org))
+address$org <- with(address, ifelse(org == "UNIV WESTERN AUSTRALIA M085",
+                                    "UNIV WESTERN AUSTRALIA", org))
+
+address$org <- with(address, ifelse(org == "UNIV SANTIAGO COMPOSTELA",
+                                    "UNIV SANTIAGO DE COMPOSTELA", org))
+
+address$org <- with(address, ifelse(org == "UNIV PEDAG \\& TECNOL COLOMBIA",
+                                    "UNIV PEDAGOG \\& TECNOL COLOMBIA", org))
+
+address$org <- with(address, ifelse(org == "UNIV LONDON IMPERIAL COLL SCI TECHNOL \\& MED" | org == "UNIV LONDON LONDON SCH HYG \\& TROP MED" | org == "UNIV LONDON ROYAL VET COLL" | org == "ROYAL VET COLL",
+                                    "UNIV LONDON", org))
+
+address$org <- with(address, ifelse(org == "UNIV LISBOA ULISBOA",
+                                    "UNIV LISBON", org))
+
+address$org <- with(address, ifelse(org == "UNIV LIEGE B34" | org == "UNIV LIEGE GEMBLOUX AGROBIO TECH" | org == "ULG FMV" | org == "GEMBLOUX AGR UNIV" | org == "GEMBLOUX AGR UNIV FUSAGX",
+                                    "UNIV LIEGE", org))
+
+address$org <- with(address, ifelse(org == "UNIV HOHENHEIM 480A",
+                                    "UNIV HOHENHEIM", org))
+
+address$org <- with(address, ifelse(org == "UNIV GHENT VIB" | org == "UNIV COLL GHENT" | org == "SALISBURYLAAN 133",
+                                    "UNIV GHENT", org))
+
+address$org <- with(address, ifelse(org == "UNIV COLL DUBLIN LYONS RES FARM" | org == "UCD VET SCI CTR" | org == "UCD AGR \\& FOOD SCI CTR" | org == "NATL UNIV IRELAND UNIV COLL DUBLIN",
+                                    "UNIV COLL DUBLIN", org))
+
+address$org <- with(address, ifelse(org == "UMR 1114 EMMAH INRA" | org == "UMR 1253 SCI \\& TECHNOL LAIT \\& EUF" | org == "UMR 791 INRA AGROPARISTECH MOSAR" | org == "UMR INR AGROPARIS TECH" | org == "UMR INRA" | org == "UMR INRA AGROCAMPUS OUEST 1069 SAS" | org == "UMR INRA ENVA 1198" | org == "UMR PHYSIOL NUTR \\& ALIMENTAT" | org == "INRA AGRO PARIS TECH" | org == "INRA AGROCAMPUS OUEST" | org == "INRA AGROCAMPUS RENNES" | org == "INRA AGROPARIS TECH PHYSIOL NUTR" | org == "INRA AGROPARISTECH" | org == "INRA AGROPARISTECH ENVIRONM \\& GRANDES CULTURES" | org == "INRA AGROPARISTECH UMR PNA" | org == "INRA ASTER MIRECOURT AGROSYST TERR \\& RESSOURCES" | org == "INRA CLERMONT FERRAND THEIX" | org == "INRA DOMAINE VILVERT" | org == "INRA GENPHYSE" | org == "INRA INAPG" | org == "INRA ONIRIS" | org == "INRA SAD" | org == "INRA SADAPT AGROPARISTECH" | org == "INRA SAGA AUZEVILLE" | org == "INRA UMR 1213 HERBIVORES" | org == "INRA UMR 1348 PHYSIOL ENVIRONM \\& GENET ANIM \\& SYS" | org == "INRA UMR DAIRY PROD 1080" | org == "INRA UMR PROD LAIT" | org == "INRA UMR1348 PEGASE" | org == "INRA UMR868" | org == "INRA UNIV BLAISE PASCAL" | org == "INRA UR 1213 HERBIVORES" | org == "INRA UR 631" | org == "INRA UR545 FROMAGERES" | org == "INRA VETAGRO SUP" | org == "INRA VETAGROSUP",
+                                    "INRA", org))
+
+address$org <- with(address, ifelse(org == "UMR RUMINANT HUSBANDRY WARM REG",
+                                    "CIRAD", org))
+address$org <- with(address, ifelse(org == "TINE NORWEGIAN DAIRIES BA" | org == "TINE SA",
+                                    "TINE NORWEGIAN DAIRIES", org))
+address$org <- with(address, ifelse(org == "TEXAS A\\&M AGRILIFE RES" | org == "TEXAS A\\&M SYST" | org == "TEXAS A\\&M UNIV SOCIOL" | org == "TEXAS A\\&M UNIV SYST",
+                                    "TEXAS A\\&M UNIV", org))
+address$org <- with(address, ifelse(org == "TECH UNIV MUENCHEN",
+                                    "TECH UNIV MUNICH", org))
+address$org <- with(address, ifelse(org == "TEAGASC ANIM \\& GRASSLAND \\& INNOVAT RES CTR" | org == "TEAGASC ANIM \\& GRASSLAND RES \\& INNOVAT CTR" | org == "TEAGASC ANIM PROD RES CTR" | org == "TEAGASC ASHTOWN FOOD RES CTR" | org == "TEAGASC DAIRY PROD RES CTR" | org == "TEAGASC ENVIRONM RES CTR" | org == "TEAGASC FOOD RES CTR" | org == "TEAGASC FOOD RES FOOD CTR" | org == "TEAGASC GRANGE BEEF RES CTR" | org == "TEAGASC MOOREPARK DAIRY PROD RES CTR" | org == "TEAGASC MOOREPARK FERMOY CO" | org == "TEAGASC MOOREPK" | org == "TEAGASC MOOREPK FERMOY" | org == "TEAGASC RES CTR",
+                                    "TEAGASC", org))
+address$org <- with(address, ifelse(org == "SRUC EDINBURGH CAMPUS" | org == "SRUC RES" | org == "SRUC SCOTLANDS RURAL COLL" | org == "SCOTLANDS RURAL COLL" | org == "SCOTLANDS RURAL COLL SRUC" | org == "SCOTLANDS RURAL COLL SRUC RES" | org == "SCOTTISH AGR COLL" | org == "SCOTTISH AGR COLL VET SERV",
+                                    "SRUC", org))
+address$org <- with(address, ifelse(org == "NOVARTIS ANIM HLTH AUSTRALASIA PTY LTD" | org == "NOVARTIS HEALTHCARE PRIVATE LTD" | org == "NOVARTIS PHARMACEUT",
+                                    "NOVARTIS", org))
+address$org <- with(address, ifelse(org == "NORWEGIAN SCH ECON \\& BUSINESS ADM" | org == "NORWEGIAN SCH VET MED" | org == "NORWEGIAN SCH VET SCI" | org == "NORWEGIAN UNIV IIFE SCI" | org == "NORWEGIAN UNIV LIFE SCI" | org == "NORWEGIAN COLL VET MED",
+                                    "NORWEGIAN UNIV", org))
+address$org <- with(address, ifelse(org == "NORWEGIAN INST AGR \\& ENVIRONM RES" | org == "NORWEGIAN INST AGR \\& ENVIRONM RES BIOFORSK",
+                                    "BIOFORSK NORWEGIAN INST AGR \\& ENVIRONM RES", org))
+address$org <- with(address, ifelse(org == "NESTEC LTD" | org == "NESTLE PURINA RES" | org == "NESTLE R\\&D CTR MINNEAPOLIS" | org == "NESTLE RES CTR",
+                                    "NESTLE", org))
+address$org <- with(address, ifelse(org == "N CAROLINA AGR \\& TECH STATE UNIV",
+                                    "N CAROLINA STATE UNIV", org))
+address$org <- with(address, ifelse(org == "MTT AGRIFOOD RES" | org == "MTT AGRIFOOD RES BIOTECHNOL \\& FOOD RES" | org == "MTT AGRIFOOD RES FINALND" | org == "MTT AGRIFOOD RES FINLAND" | org == "MTT AGRIFOOD RES FINLANDD" | org == "MTT AGRIFOOD RES LAND",
+                                    "MTT", org))
+address$org <- with(address, ifelse(org == "MOOREPARK DAIRY PROD RES CTR" | org == "MOOREPARK RES CTR" | org == "MOOREPK DAIRY PROD RES CTR" | org == "MOOREPK FOOD RES CTR" | org == "MOOREPK PROD RES CTR" | org == "MOOREPK PROD RES CTRA" | org == "MOOREPK RES CTR",
+                                    "MOOREPARK CO", org))
+address$org <- with(address, ifelse(org == "MONSANTO CO LC",
+                                    "MONSANTO CO", org))
+address$org <- with(address, ifelse(org == "MERIAL 29 AVE TONY GARNIER" | org == "MERIAL GMBH" | org == "MERIAL LTD" | org == "MERIAL SAS",
+                                    "MERIAL", org))
+address$org <- with(address, ifelse(org == "IST ZOO PROFILATT SPERIMENTALE LAZIO \\& TOSCANA" | org == "IST ZOOPROFILAT SPERIMENTALE UMBRIA \\& MARCHE" | org == "IST ZOOPROFILATT PIEMONTE LIGURIA \\& VALLE AOSTA" | org == "IST ZOOPROFILATT SPERIMENTALE ABRUZZO \\& MOLISE G" | org == "IST ZOOPROFILATT SPERIMENTALE LAZIO \\& TOSCANA M A" | org == "IST ZOOPROFILATT SPERIMENTALE LOMBARDIA \\& DELLEMI" | org == "IST ZOOPROFILATT SPERIMENTALE LOMBARDIA \\& EMILIA" | org == "IST ZOOPROFILATT SPERIMENTALE MEZZOGIORNO" | org == "IST ZOOPROFILATT SPERIMENTALE PIEMONTE" | org == "IST ZOOPROFILATT SPERIMENTALE PIEMONTE LIGURIA \\&" | org == "IST ZOOPROFILATT SPERIMENTALE PUGLIA \\& BASILICATA" | org == "IST ZOOPROFILATT SPERIMENTALE REG LAZIO \\& TOSCANA" | org == "IST ZOOPROFILATT SPERIMENTALE UMBRIA \\& MARCHE" | org == "IST ZOOPROFILATT SPERIMENTALE VENEZIE" | org == "IST ZOOPROFILATT SPERIMENTALE VENEZIE IZSVE" | org == "IST ZOOPROFILATT VENEZIE" | org == "IST ZOOPROFILATTICO SPERIMENTALE LOMBARDIA \\& EMIL" | org == "IST ZOOPROFILATTICO SPERIMENTALE MEZZOGIORNO" | org == "IST ZOOPROFILATTICO SPERIMENTALE PUGLIA \\& BASILIC" | org == "IST ZOOPROFILATTICO SPERIMENTALE VENEZIE",
+                                    "IST ZOOPROFILATT SPERIMENTALE", org))
+address$org <- with(address, ifelse(org == "GD" | org == "GD ANIM HLTH SERV" | org == "GD ANIM HLTH SERV DEVENTER" | org == "GD ANIM HLTH SERV LTD" | org == "GD BV" | org == "GD DEVENTER" | org == "GD LTD" | org == "DUTCH ANIM HLTH SERV" | org == "DUTCH UDDER HLTH CTR",
+                                    "GD ANIM HLTH", org))
+address$org <- with(address, ifelse(org == "FONTERRA COOPERAT GRP LTD" | org == "FONTERRA RES CTR",
+                                    "FONTERRA", org))
+address$org <- with(address, ifelse(org == "FOOD \\& AGR MAT INSPECT CTR" | org == "FOOD \\& AGR ORG UNITED NAT" | org == "FOOD \\& AGR ORG UNITED NATIONS" | org == "FOOD \\& AGR ORG UNITED NATIONS FAO" | org == "FAO AGAG" | org == "FAO HEADQUARTERS" | org == "FAO IAEA",
+                                    "FAO", org))
+address$org <- with(address, ifelse(org == "ENVL" | org == "ECOLE NATL VET LYON",
+                                    "ENV LYON", org))
+address$org <- with(address, ifelse(org == "ECOLE NATL VET" & (reprint_author == "BAREILLE, N" | reprint_author == "BEAUDEAU, F" | reprint_author == "LE BIZEC, B"),
+                                    "ENV NANTES", org))
+address$org <- with(address, ifelse(org == "ECOLE NATL VET" | org == "ECOLE NATL VET ALFORT",
+                                    "ENV MAISONS ALFORT", org))
+address$org <- with(address, ifelse(org == "DUPONT NUTR \\& HLTH" | org == "DUPONT PIONEER",
+                                    "DUPONT PIONEER", org))
+address$org <- with(address, ifelse(org == "DAIRYNZ" | org == "DAIRYNZ LTD" | org == "DAITYNZ LTD" | org == "DAIRY NZ LTD",
+                                    "DAIRYNZ", org))
+address$org <- with(address, ifelse(org == "CTR DIS CONTROL",
+                                    "CTR DIS CONTROL \\& PREVENT", org))
+address$org <- with(address, ifelse(org == "CSIRO ADELAIDE LABS" | org == "CSIRO AGR" | org == "CSIRO AGR AUSTRALIAN TROP SCI \\& INNOVAT PRECINCT" | org == "CSIRO AGR COMPUTAT \\& SYST BIOL" | org == "CSIRO ANIM FOOD \\& HLTH SCI" | org == "CSIRO DIGITAL PROD FLAGSHIP" | org == "CSIRO FOOD \\& NUTR FLAGSHIP" | org == "CSIRO FOOD \\& NUTR SCI" | org == "CSIRO FOOD FUTURES FLAGSHIP \\& LIVESTOCK IND" | org == "CSIRO LAND \\& WATER" | org == "CSIRO LIVESTOCK IND" | org == "CSIRO PLANT IND" | org == "CSIRO SUSTAINABLE AGR FLAGSHIP" | org == "CSIRO SUSTAINABLE ECOSYST",
+                                    "CSIRO", org))
+address$org <- with(address, ifelse(org == "CSIC UCLM JCCM" | org == "CSIC ULE",
+                                    "CSIC", org))
+address$org <- with(address, ifelse(org == "ALBERTA AGR \\& FOOD" | org == "ALBERTA AGR \\& RURAL DEV" | org == "ALBERTA AGR FOOD \\& RURAL DEV",
+                                    "ALBERTA AGR \\& RURAL DEV", org))
+
+address$org <- with(address, ifelse(org == "WILLOW WALK" | org == "VIA ACESSO PAULO DONATO CASTELLANE S-N" | org == "VIA APPIA", "", org))
+
+org <- address$org
+org <- sort(org)
+table(org[1:100])
+address$org <- with(address, ifelse(org == "3200 RUE SICOTTE" |
+                                  org == "FAC MED VET", "UNIV MONTREAL", org))
+address$org <- with(address, ifelse(org == "1053 CARLING AVE", "OTTAWA HOSP", org))
+address$org <- with(address, ifelse(org == "1767 ANGUS CAMPBELL RD", "BC MINIST AGR", org))
+address$org <- with(address, ifelse(org == "3400 CASAVANT O", "CFIA", org))
+address$org <- with(address, ifelse(org == "50 STONE RD EAST", "OVC", org))
+address$org <- with(address, ifelse(org == "550 UNIV AVE", "UPEI", org))
+address$org <- with(address, ifelse(org == "6 MAKINS RD", "CTR ECOLOGY AND HYDROLOGY", org))
+address$org <- with(address, ifelse(org == "731 PARKDALE AVE", "OHRI", org))
+address$org <- with(address, ifelse(org == "AFRC", "INST ANIM HLTH", org))
+address$org <- with(address, ifelse(org == "AGR \\& AGRI FOOD CANADA LACOMBE RES CTR" |
+                                    org == "AGR \\& AGRIFOOD CANADA" |
+                                    org == "AGR \\& AGRIFOOD CANADA RES CTR" |
+                                    org == "AGR \\& AGROALIMENTAIRE CANADA" |
+                                    org == "AGR \\& FOOD SECUR" |
+                                    org == "AGR CANADA" |
+                                    org == "BOX 1000" |
+                                    org == "DAIRY \\& SWINE R\\&D CTR" |
+                                    org == "DAIRY \\& SWINE RES \\& DEV CTR" |
+                                    org == "LETHBRIDGE RES CTR" |
+                                    org == "MCALLISTER" |
+                                    org == "SHERBROOKE RES \\& DEV CTR" |
+                                   org == "AGR \\& AGRI FOOD CANADA RES CTR",
+                                    "AGR & AGRI FOOD CANADA", org))
+address$org <- with(address, ifelse(org == "AGRIFOOD \\& BIOSCI INST",
+                                    "AGRI FOOD \\& BIOSCI", org))
+address$org <- with(address, ifelse(org == "ALBERTA AGR \\& RURAL DEV AGR CTR" |
+                                    org == "ALBERTA AGR \\& RURAL DEV",
+                                    "ALBERTA AGR \\& FORESTRY",
+                                    org))
+address$org <- with(address, ifelse(org == "ALBERTA HLTH SERV PUBL HLTH SURVEILLANCE",
+                                    "ALBERTA HLTH SERV", org))
+address$org <- with(address, ifelse(org == "AVE DUQUE CAXIAS NORTE 225",
+                                    "UNIV SAO PAULO", org))
+address$org <- with(address, ifelse(org == "CANADIAN BOVINE MASTITIS RES NETWORK",
+                                    "CANADIAN BOVINE MASTITIS \\& MILK QUAL RES NETWORK",
+                                    org))
+address$org <- with(address, ifelse(org == "CANADIAN FOOD INSPECT AGCY",
+                                    "CFIA",
+                                    org))
+address$org <- with(address, ifelse(org == "ANIM \\& PLANT HLTH AGCY" |
+                                    org == "ANIM \\& PLANT HLTH INSPECT SERV",
+                                    "USDA",
+                                    org))
+address$org <- with(address, ifelse(org == "ANIM HLTH \\& VET LABS AGCY" |
+                                    org == "ANIM HLTH \\& VET LABS AGCY AHVLA" |
+                                    org == "ANIM PLANT HLTH INSPECT SERV" |
+                                    org == "APHA WEYBRIDGE",
+                                    "AHVLA",
+                                    org))
+address$org <- with(address, ifelse(org == "CANADIAN FOOD INSPECT AGCY",
+                                    "CFIA",
+                                    org))
+address$org <- with(address, ifelse(org == "CANADIAN FOREST SERV",
+                                    "NAT RESOURCES CANADA",
+                                    org))
+address$org <- with(address, ifelse(org == "CLIN PEDIAT B TRAMBUSTI PIAZZA GIULIO CESARE",
+                                    "CLIN PEDIAT B TRAMBUSTI",
+                                    org))
+address$org <- with(address, ifelse(org == "CSIRO CAFHS",
+                                    "CSIRO",
+                                    org))
+address$org <- with(address, ifelse(org == "CTR IRD",
+                                    "MIGEVEC",
+                                    org))
+address$org <- with(address, ifelse(org == "DEPT VET MICROBIOL",
+                                    "WCVM",
+                                    org))
+address$org <- with(address, ifelse(org == "DEPT ZOOTECNIA",
+                                    "UNESP",
+                                    org))
+address$org <- with(address, ifelse(org == "ENVIRONM \\& CLIMATE CHANGE CANADA",
+                                    "ENVIRONM CANADA",
+                                    org))
+address$org <- with(address, ifelse(org == "FAC EXTENS" |
+                                   org == "FAC VET MED",
+                                    "UNIV CALGARY",
+                                    org))
+address$org <- with(address, ifelse(org == "FAC VET \\& AGR SCI",
+                                    "UNIV MELBOURNE",
+                                    org))
+address$org <- with(address, ifelse(org == "FCAV UNIV ESTADUAL PAULISTA",
+                                    "UNESP",
+                                    org))
+address$org <- with(address, ifelse(org == "FRIEDRICH LOEFFLER INST FLI",
+                                    "FRIEDRICH LOEFFLER INST",
+                                    org))
+address$org <- with(address, ifelse(org == "GE",
+                                    "CHINA PHARMACEUT UNIV",
+                                    org))
+address$org <- with(address, ifelse(org == "INST ARMAND FRAPPIER",
+                                    "INRS INST ARMAND FRAPPIER",
+                                    org))
+address$org <- with(address, ifelse(org == "JL SHUTE BLDG",
+                                    "UNIV SYDNEY",
+                                    org))
+address$org <- with(address, ifelse(org == "KARROW",
+                                    "UNIV GUELPH",
+                                    org))
+address$org <- with(address, ifelse(org == "KING SAUD BIN ABDULAZIZ UNIV HLTH SCI",
+                                    "KING SAUD UNIV",
+                                    org))
+address$org <- with(address, ifelse(org == "LOOR",
+                                    "UNIV ILLINOIS",
+                                    org))
+address$org <- with(address, ifelse(org == "MAISONNEUVE ROSEMONT HOSP" |
+                                   org == "MAISONNEUVE ROSEMONT HOSP RES CTR" |
+                                   org == "HOP MAISON NEUVE ROSEMONT",
+                                   "UNIV MONTREAL",
+                                    org))
+address$org <- with(address, ifelse(org == "MCGILL UNIV HLTH CTR" |
+                                   org == "ROYAL VICTORIA HOSP H6 19",
+                                    "MCGILL UNIV",
+                                    org))
+address$org <- with(address, ifelse(org == "NATL ANIM DIS CTR" |
+                                    org == "NATL CTR FOREIGN ANIM DIS" |
+                                   org == "CANADIAN FOOD INSPECT AGENCY",
+                                    "CFIA",
+                                    org))
+address$org <- with(address, ifelse(org == "NATL MICROBIOL LAB" |
+                                   org == "PHAC LFZ",
+                                    "PHAC",
+                                    org))
+address$org <- with(address, ifelse(org == "PK CANADA AGCY",
+                                    "UNIV SASKATCHEWAN",
+                                    org))
+address$org <- with(address, ifelse(org == "POB 16146",
+                                    "SEQWATER",
+                                    org))
+address$org <- with(address, ifelse(org == "POB 22490",
+                                    "KING SAUD UNIV",
+                                    org))
+address$org <- with(address, ifelse(org == "POB 29053-00625",
+                                    "UNIV NAIROBI",
+                                    org))
+address$org <- with(address, ifelse(org == "PROV LAB PUBL HLTH",
+                                    "ALBERTA HLTH SERV",
+                                    org))
+address$org <- with(address, ifelse(org == "PHAC",
+                                    "PUBL HLTH AGCY CANADA",
+                                    org))
+address$org <- with(address, ifelse(org == "PUBL HLTH ONTARIO LABS",
+                                    "PUBL HLTH ONTARIO",
+                                    org))
+address$org <- with(address, ifelse(org == "ROYAL UNIV HOSP" |
+                                    org == "UNIV SASKACHEWAN" |
+                                   org == "WCVM",
+                                    "UNIV SASKATCHEWAN",
+                                    org))
+address$org <- with(address, ifelse(org == "SAO PAULO STATE UNIV FCAV UNESP" |
+                                    org == "UNESP UNIV ESTADUAL PAULISTA" |
+                                    org == "UNIV ESTADUAL PAULISTA" |
+                                   org == "UNIV ESTADUAL PAULISTA UNESP",
+                                    "UNESP",
+                                    org))
+address$org <- with(address, ifelse(org == "ST BONIFACE GEN HOSP",
+                                    "UNIV MANITOBA",
+                                    org))
+address$org <- with(address, ifelse(org == "UNIV NACL CTR PROV BUENOS AIRES" |
+                                    org == "UNIV NACL CTR PROV BUENOS AIRES UNICEN",
+                                    "UNICEN",
+                                    org))
+address$org <- with(address, ifelse(org == "UNIV VET MED",
+                                    "UNIV VET MED HANNOVER",
+                                    org))
+address$org <- with(address, ifelse(org == "UPEI",
+                                    "UNIV PRINCE EDWARD ISL",
+                                    org))
+address$org <- with(address, ifelse(org == "USDA ARS PLUM ISL ANIM DIS CTR" |
+                                   org == "PLUM ISL ANIM DIS CTR",
+                                    "USDA",
+                                    org))
+address$org <- with(address, ifelse(org == "VACCINE INFECT DIS ORG INT VACCINE CTR VIDO INTER" | org == "VIDO",
+                                    "VACCINE INFECT DIS ORG",
+                                    org))
+address$org <- with(address, ifelse(org == "VON KEYSERLINGK",
+                                    "UNIV BRITISH COLUMBIA",
+                                    org))
+address$org <- with(address, ifelse(org == "WILLE" | org == "307",
+                                    "UNIV ALBERTA",
+                                    org))
+address$org <- with(address, ifelse(org == "OVC",
+                                    "UNIV GUELPH",
+                                    org))
+address$org <- with(address, ifelse(org == "AGR \\& AGRI FOOD CANADA",
+                                    "AGR & AGRI FOOD CANADA",
+                                    org))
+address$org <- with(address, ifelse(org == "ALBERTA AGR \\& FORESTRY",
+                                    "ALBERTA AGR & FORESTRY",
+                                    org))
+address$org <- with(address, ifelse(org == "KM 40 CARRETERA COLIMA MANZANILLO",
+                                    "UCOL",
+                                    org))
+```
+
+```{r, eval=FALSE}
+D <- readFiles("records.bib")
+M <- convert2df(D, dbsource = "isi", format = "bibtex")
+
+results <- biblioAnalysis(M, sep = ";")
+```
+
+So we've got 1569 articles and 114 reviews, from 5157 authors.
+
+```{r}
+results$Articles  ## number of articles
+results$nAuthors  ## number of authors
+```
+
+There's a generic `summary` function that provides overall results of the
+bibliographic analysis:
+
+```{r}
+S <- summary(results, k = 10, pause = FALSE)
+```
+
+Thanks to `stringr` package, I could fix the address information of the authors
+to get the following graphs.
+
+```{r, echo=FALSE, fig.cap="Evolution of publications in cattle health research."}
+freq_pub <- as.data.frame(table(results$Years))
+freq_pub$Var1 <- as.integer(as.character(freq_pub$Var1))
+
+ggplot(freq_pub, aes(x = Var1, y = Freq)) + 
+    geom_line(colour=ggthemes_data$fivethirtyeight["red"]) +
+    scale_x_continuous(breaks = 2012:2017) + 
+    geom_point(colour=ggthemes_data$fivethirtyeight["red"]) + 
+    theme_fivethirtyeight() + 
+    theme(axis.title=element_text(face="bold"),
+          plot.title=element_text(size=14)) +
+    xlab("Years") + 
+    ylab("Publications") +
+    ggtitle("Evolution of publications in cow health research",
+            subtitle="From January 2012 to October 2017") +
+    theme(axis.text.y = element_text(colour = "grey42")) + 
+    theme(axis.text.x = element_text(colour="grey42"))
+```
+
+```{r, echo=FALSE, fig.cap="The 10 most productive research groups."}
+freq_org <- as.data.frame(sort(table(address$org), decreasing = TRUE))
+
+ggplot(freq_org[1:10, ], aes(x = Var1, y = Freq)) + 
+    geom_bar(stat = "identity", fill=ggthemes_data$fivethirtyeight["red"]) +
+    theme_fivethirtyeight() + 
+    theme(axis.title=element_text(face="bold"),
+          plot.title=element_text(size=14)) +
+    ylab("Publications") +
+    ggtitle("Most productive research groups",
+            subtitle="From January 2012 to October 2017") +
+    theme(axis.text.y = element_text(colour = "grey42")) + 
+    theme(axis.text.x = element_text(angle = 65, hjust = .5, vjust = .5,
+                                     colour="grey42")) +
+    theme(axis.title.x = element_blank())
+```
+
+Note that 2017 is not over yet, so explaining the drop in the number of
+publications in the first figure.
+
+The most productive group is the University of Guelph, closely followed by
+Agriculture and Agri-Food Canada.
+
+## Measure of collaboration
+
+Dominance factor (DF) can be computed, according to the formula of [Kumar & Kumar,
+2008](http://www.collnet.de/Berlin-2008/KumarWIS2008cir.pdf).
+This factor gives an indication of the collaboration in the field, as a ratio of
+the number of multi-authored articles in which a scholar appears as first author
+to the total number of multi-authored articles.
+A value of less than 0.5 reflects a good sign for collaboration; high value
+shows more dominance of author as first author.
+
+```{r}
+DF <- dominance(results, k = 10)
+DF
+```
+
+All authors in the field look like they're quite collaborative.
+Buczinski (Université de Montréal) and Stanford (Alberta Agriculture & Forestry)
+dominate their research team because they appear as first authors in a large
+proportion of their papers (10 out of 26 for Buczinski and 9 out of 28 for Stanford).
+
+## Authors' h-index
+
+The h-index tries to measure both the number of publications a researcher
+produced ("quantity") and their impact on other publications ("quality").
+Here's my own and the ones from the 30 most productive authors, in this
+collection.
+
+```{r}
+indices <- Hindex(M, authors = "HAINE D", sep = ";", years = 10)
+## Haine's impact indices:
+indices$H
+# Haine's citations
+indices$CitationList
+
+## h-index of the first 30 most productive authors in this collection
+authors=gsub(",", " ", names(results$Authors)[1:30])
+indices <- Hindex(M, authors, sep = ";", years = 50)
+indices$H
+```
+
+My h-index is 3 (all time 11 on [Google
+Scholar](https://scholar.google.com/citations?user=KFeLZyIAAAAJ&hl=en), and
+I have 3 other papers in press, not yet included in this collection, and you
+need some time for papers to get cited).
+Barkema, Orsel (University of Calgary), LeBlanc, Leslie, Kelton, Chapinal
+(University of Guelph), McAllister, Rushen, Beauchemin (Agriculture and
+Agri-Food Canada), Weary (University of British Columbia), and Miglior (Canadian
+Dairy Network) have the largest h-index among the top 30 most productive
+authors.
+However we see h-index of zero for Von Keyserlingk (University of British
+Columbia), De Buck (University of Calgary), and De Passillé (Agriculture and
+Agri-Food Canada).
+My guess is that their name is wrongly filtered, resulting in a wrong
+computation of their h-index (Von Keyserlingk and De Buck have 42 and 21 on
+Google Scholar, respectively. Couldn't find De Passillé).
+
+## Bilbiometric network matrices
+
+This is where it's getting interesting: analysing the networks based on the
+attributes of the bibliometric data.
+
+### Authors' collaboration
+
+```{r, echo=FALSE, fig.width=12, fig.height=12, fig.cap="Authors' collaboration."}
+NetMatrix_COL <- biblioNetwork(M, analysis = "collaboration",
+                               network = "authors", sep = ";")
+net_AU <- networkPlot(NetMatrix_COL, n = 50, Title = "Authors' Collaboration",
+                      type = "kamada", size = TRUE, halo = TRUE)
+```
+
+Different communities appear, around 2 PIs: Barkema and McAllister (remember
+from above, these two are very productive and have a low DF).
+Barkema is centered across 2 communities (in green and yellow).
+Interestingly, the blue community is mainly from eastern Canada (Université de
+Montréal, University of Prince Edward Island), while the green one is more
+western (University of Guelph, University of Calgary, University of British
+Columbia).
+In both case, authors are working on a variety of topics: clinical diseases
+(i.e. Fecteau, Francoz), epidemiology (i.e. Dohoo, Pearl), production (LeBlanc),
+animal sciences (Pellerin, Vasseur), animal welfare (De Vries, Von Keyserlingk),
+etc.
+But in most cases, it looks like they're doing field work.
+While around McAllister, it looks like it's more lab work.
+This would need digging deeper, but it's a rough first approximation.
+
+### Organisations' collaboration
+
+```{r, echo=FALSE, fig.width=12, fig.height=12, fig.cap="Organisations' collaboration."}
+M_org <- metaTagExtraction(M, Field = "AU_UN", sep = ";")
+NetMatrix_ORG <- biblioNetwork(M_org, analysis = "collaboration",
+                               network = "universities", sep = ";")
+net_ORG <- networkPlot(NetMatrix_ORG, n = 25, Title = "Organisations' Collaboration",
+                       type = "kamada", size = TRUE)
+```
+
+Collaboration is mainly realised between Canadian institutions, with only one
+from Europe (University of Ghent, Belgium), and 6 from the US (Kansas State
+University, Colorado State University, University of Florida, University of
+California in Davis, Iowa State University, and University of Minnesota).
+
+### Author keyword co-occurrences
+
+```{r, echo=FALSE, fig.width=12, fig.height=12, fig.cap="Author keyword co-occurrences."}
+NetMatrix_kw <- biblioNetwork(M, analysis = "co-occurrences",
+                              network = "author_keywords", sep = ";")
+kw_net <- networkPlot(NetMatrix_kw, n = 20, Title = "Author Keywords Co-occurrences",
+                      type = "kamada", size = TRUE)
+```
+
+According to keywords provided by the authors, we find the usual research themes
+in cattle health: mastitis, welfare, lameness, Johne's, BRD.
+
+### Co-word analysis: conceptual structure of the field
+
+Here we're mapping the conceptual structure of the field using the word
+co-occurrences in the bibliographic collection, by performing a MCA and K-means
+clustering to identify clusters of documents which express common concepts.
+
+```{r, echo=FALSE, fig.width=12, fig.height=12, fig.cap="Conceptual structure of the field."}
+CS <- conceptualStructure(M_org, field = "DE_TM", minDegree = 12, k.max = 5,
+                          stemming = FALSE, labelsize = 10)
+```
+
+Four fields emerge, one specific to paratuberculosis, one for contagious
+diseases, one for production diseases and performances, and one probably for
+genetics.
+
+## Final word
+
+This was a rough tentative of exploring Canadian research on cattle health.
+
+Eh! in Canada, you're either in the gang of Barkema, or McAllister... `r emo::ji("wink")`
