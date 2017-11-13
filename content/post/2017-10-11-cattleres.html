@@ -197,7 +197,7 @@ Figure 2: The 10 most productive research groups.
 </div>
 <p>Note that 2017 is not over yet, so explaining the drop in the number of publications in the first figure.</p>
 <p>The most productive group is the University of Guelph, closely followed by Agriculture and Agri-Food Canada.</p>
-<div id="measure-of-collaboration" class="section level2">
+<section id="measure-of-collaboration" class="level2">
 <h2>Measure of collaboration</h2>
 <p>Dominance factor (DF) can be computed, according to the formula of <a href="http://www.collnet.de/Berlin-2008/KumarWIS2008cir.pdf">Kumar &amp; Kumar, 2008</a>. This factor gives an indication of the collaboration in the field, as a ratio of the number of multi-authored articles in which a scholar appears as first author to the total number of multi-authored articles. A value of less than 0.5 reflects a good sign for collaboration; high value shows more dominance of author as first author.</p>
 <pre class="r"><code>DF &lt;- dominance(results, k = 10)
@@ -225,8 +225,8 @@ DF</code></pre>
 ## DE,BUCKJ                          5          9
 ## MCALLISTER,TA                     1         10</code></pre>
 <p>All authors in the field look like they’re quite collaborative. Buczinski (Université de Montréal) and Stanford (Alberta Agriculture &amp; Forestry) dominate their research team because they appear as first authors in a large proportion of their papers (10 out of 26 for Buczinski and 9 out of 28 for Stanford).</p>
-</div>
-<div id="authors-h-index" class="section level2">
+</section>
+<section id="authors-h-index" class="level2">
 <h2>Authors’ h-index</h2>
 <p>The h-index tries to measure both the number of publications a researcher produced (“quantity”) and their impact on other publications (“quality”). Here’s my own and the ones from the 30 most productive authors, in this collection.</p>
 <pre class="r"><code>indices &lt;- Hindex(M, authors = &quot;HAINE D&quot;, sep = &quot;;&quot;, years = 10)
@@ -285,11 +285,11 @@ indices$H</code></pre>
 ## 29            DUBUC J       6      10 1.0000000 105 16
 ## 30             WOLF R       8      11 1.6000000 143 16</code></pre>
 <p>My h-index is 3 (all time 11 on <a href="https://scholar.google.com/citations?user=KFeLZyIAAAAJ&amp;hl=en">Google Scholar</a>, and I have 3 other papers in press, not yet included in this collection, and you need some time for papers to get cited). Barkema, Orsel (University of Calgary), LeBlanc, Leslie, Kelton, Chapinal (University of Guelph), McAllister, Rushen, Beauchemin (Agriculture and Agri-Food Canada), Weary (University of British Columbia), and Miglior (Canadian Dairy Network) have the largest h-index among the top 30 most productive authors. However we see h-index of zero for Von Keyserlingk (University of British Columbia), De Buck (University of Calgary), and De Passillé (Agriculture and Agri-Food Canada). My guess is that their name is wrongly filtered, resulting in a wrong computation of their h-index (Von Keyserlingk and De Buck have 42 and 21 on Google Scholar, respectively. Couldn’t find De Passillé).</p>
-</div>
-<div id="bilbiometric-network-matrices" class="section level2">
+</section>
+<section id="bilbiometric-network-matrices" class="level2">
 <h2>Bilbiometric network matrices</h2>
 <p>This is where it’s getting interesting: analysing the networks based on the attributes of the bibliometric data.</p>
-<div id="authors-collaboration" class="section level3">
+<section id="authors-collaboration" class="level3">
 <h3>Authors’ collaboration</h3>
 <div class="figure"><span id="fig:unnamed-chunk-11"></span>
 <img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-11-1.png" alt="Authors' collaboration." width="1152" />
@@ -298,8 +298,8 @@ Figure 3: Authors’ collaboration.
 </p>
 </div>
 <p>Different communities appear, around 2 PIs: Barkema and McAllister (remember from above, these two are very productive and have a low DF). Barkema is centered across 2 communities (in green and yellow). Interestingly, the blue community is mainly from eastern Canada (Université de Montréal, University of Prince Edward Island), while the green one is more western (University of Guelph, University of Calgary, University of British Columbia). In both case, authors are working on a variety of topics: clinical diseases (i.e. Fecteau, Francoz), epidemiology (i.e. Dohoo, Pearl), production (LeBlanc), animal sciences (Pellerin, Vasseur), animal welfare (De Vries, Von Keyserlingk), etc. But in most cases, it looks like they’re doing field work. While around McAllister, it looks like it’s more lab work. This would need digging deeper, but it’s a rough first approximation.</p>
-</div>
-<div id="organisations-collaboration" class="section level3">
+</section>
+<section id="organisations-collaboration" class="level3">
 <h3>Organisations’ collaboration</h3>
 <div class="figure"><span id="fig:unnamed-chunk-12"></span>
 <img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-12-1.png" alt="Organisations' collaboration." width="1152" />
@@ -308,8 +308,8 @@ Figure 4: Organisations’ collaboration.
 </p>
 </div>
 <p>Collaboration is mainly realised between Canadian institutions, with only one from Europe (University of Ghent, Belgium), and 6 from the US (Kansas State University, Colorado State University, University of Florida, University of California in Davis, Iowa State University, and University of Minnesota).</p>
-</div>
-<div id="author-keyword-co-occurrences" class="section level3">
+</section>
+<section id="author-keyword-co-occurrences" class="level3">
 <h3>Author keyword co-occurrences</h3>
 <div class="figure"><span id="fig:unnamed-chunk-13"></span>
 <img src="/post/2017-10-11-cattleres_files/figure-html/unnamed-chunk-13-1.png" alt="Author keyword co-occurrences." width="1152" />
@@ -318,8 +318,8 @@ Figure 5: Author keyword co-occurrences.
 </p>
 </div>
 <p>According to keywords provided by the authors, we find the usual research themes in cattle health: mastitis, welfare, lameness, Johne’s, BRD.</p>
-</div>
-<div id="co-word-analysis-conceptual-structure-of-the-field" class="section level3">
+</section>
+<section id="co-word-analysis-conceptual-structure-of-the-field" class="level3">
 <h3>Co-word analysis: conceptual structure of the field</h3>
 <p>Here we’re mapping the conceptual structure of the field using the word co-occurrences in the bibliographic collection, by performing a MCA and K-means clustering to identify clusters of documents which express common concepts.</p>
 <div class="figure"><span id="fig:unnamed-chunk-14"></span>
@@ -329,10 +329,10 @@ Figure 6: Conceptual structure of the field.
 </p>
 </div>
 <p>Four fields emerge, one specific to paratuberculosis, one for contagious diseases, one for production diseases and performances, and one probably for genetics.</p>
-</div>
-</div>
-<div id="final-word" class="section level2">
+</section>
+</section>
+<section id="final-word" class="level2">
 <h2>Final word</h2>
 <p>This was a rough tentative of exploring Canadian research on cattle health.</p>
 <p>Eh! in Canada, you’re either in the gang of Barkema, or McAllister… 😉</p>
-</div>
+</section>

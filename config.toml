@@ -200,7 +200,7 @@ ignoreFiles = ["\\.Rmd$"]
 
 [[menu.main]]
   name = "CV"
-  url = "cv/denishaine_cv.pdf"
+  url = "cv/denishaine_cv_en.pdf"
   weight = 5
 
 [[menu.main]]
