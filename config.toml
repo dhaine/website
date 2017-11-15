@@ -4,6 +4,7 @@ copyright = "&copy; 2017 Denis Haine"
 theme = "hugo-academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
+rssLimit = 30
 
 # Enable comments by entering your Disqus shortname
 disqusShortname = ""
