@@ -224,6 +224,3 @@ ignoreFiles = ["\\.Rmd$"]
 
 [languages.fr]
   languageCode = "fr"
-
-[author]
-  name = "Denis Haine"
