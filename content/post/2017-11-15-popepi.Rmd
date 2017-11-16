@@ -1,0 +1,393 @@
+---
+title: Popularity of statistical softwares in epidemiology
+author: Denis Haine
+date: '2017-11-15'
+slug: popepi-rmd
+categories: ['R', 'epidemiology']
+tags: ["epidemiology", "#rstats"]
+---
+
+[Bob Muenchen](http://r4stats.com "r4stats.com") has a series of articles on the
+[Popularity of Data Science
+Software](http://r4stats.com/2017/06/19/scholarly-articles/).
+He found that SPSS is the most used software, followed by R, SAS, Stata,
+GraphPad Prism, and MATLAB, by looking at scholarly articles in Google Scholar.
+He presents his methodology
+[here](http://r4stats.com/articles/how-to-search-for-data-science-articles/).
+While he's showing popularity (or market share) of several softwares for data
+science, statistical analysis, machine learning, artificial intelligence,
+predictive analytics, business analytics, and business intelligence, I was
+always wondering what the results would be like for my specific field,
+epidemiology.
+So let's try to use the same approach, but for softwares more likely to be used
+in epidemiology, and trying to focus on epidemiology papers.
+
+## The search
+
+Here's the list of softwares I'm looking at:
+
+|   Software | Search term                                                                                                              |
+|-----------:|:------------------------------------------------------------------------------------------------------------------------:|
+|          R | "the R software" OR "the R project" OR "r project org" OR "R development core" OR ggplot2 OR "r function" OR "r package" |
+|     Systat | Systat                                                                                                                   |
+| Statistica | "Statistica" and (Statsoft OR Dell OR Tibco OR "Quest Software" OR "Francisco Partners")                                 |
+|      Stata | ("stata" "college station") OR "StataCorp" OR "Stata Corp" OR "Stata Journal" OR "Stata Press" OR "stata command" OR "stata module" |
+| SPSS       | SPSS                                                                                                                                |
+| SAS        | "SAS Institute"                                                                                                                     |
+| Python     | python -author:python -snake                                                                                                        |
+| NCSS       | "Number Cruncher Statistical System"                                                                                                |
+| Minitab    | Minitab                                                                                                                             |
+| MATLAB     | MATLAB                                                                                                                              |
+| Julia      | "Julia: A Fast Dynamic Language for Technical Computing"                                                                            |
+| SUDAAN     | SUDAAN                                                                                                                              |
+
+You might wonder why Julia? Just for my own curiosity!
+And if you're stranger to epidemiology, you might also wonder about SUDAAN,
+which is a specific software package for the analysis of surveys, used either as
+a stand-alone or in conjunction with SAS.
+
+To these search terms, I only added "epidemiology" to get papers from Google
+Scholar and counting the number of hits.
+
+## Results!
+
+```{r, include=FALSE}
+library(tidyverse)
+library(extrafont)
+library(xkcd)
+
+all_use <- read_csv("~/workspace/h/haine/progUse/data/epistat2.csv")
+stat_use <- read_csv("~/workspace/h/haine/progUse/data/epistat.csv")
+
+all_epi <- all_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    group_by(soft, year) %>%
+    summarize(count = sum(count))
+
+stat_epi <- stat_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    filter(area == "human",
+           journal != "Statistics in Medicine",
+           journal != "Statistical Methods in Medical Research") %>%
+    group_by(soft, year) %>%
+    summarize(count = sum(count))
+
+epi_journal <- stat_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    filter(area == "human",
+           journal != "Statistics in Medicine",
+           journal != "Statistical Methods in Medical Research") %>%
+    group_by(soft, journal, year) %>%
+    summarize(count = sum(count))
+
+stat_vetepi <- stat_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    filter(area == "veterinary" | journal == "Transboundary and Emerging Diseases") %>%
+    group_by(soft, year) %>%
+    summarize(count = sum(count))
+
+vetepi_journal <- stat_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    filter(area == "veterinary" | journal == "Transboundary and Emerging Diseases") %>%
+    group_by(soft, journal, year) %>%
+    summarize(count = sum(count))
+
+stat_ref <- stat_use %>%
+    gather(soft, count, R:SUDAAN, factor_key = TRUE) %>%
+    filter(journal == "Statistics in Medicine" |
+           journal == "Statistical Methods in Medical Research") %>%
+    group_by(soft, year) %>%
+    summarize(count = sum(count))
+```
+
+```{r, echo=FALSE, fig.cap='Number of epidemiology scholarly articles in 2016, according to statistical softwares.'}
+all_epi %>%
+    filter(!soft %in% c("WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    filter(year == 2016) %>%
+    ggplot(aes(x = reorder(soft, count), y = count)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(y = "# of hits", x = "") +
+    theme_xkcd()
+```
+
+So like Bob found in an overall search, SPSS is dominant as well in my search
+within the epidemiology keyword.
+But the podium is different.
+While he found R and SAS to complete the podium, with a chasing group made of
+Stata, GraphPad Prism, and MATLAB, I have SPSS followed by a close group made of
+SAS, Stata, R, and GraphPad Prism in that order.
+
+And what about over the years for the first six softwares found above?
+
+```{r, echo=FALSE, fig.cap='Number of epidemiology scholarly articles by year, according to statistical softwares.'}
+all_epi %>%
+    filter(soft %in% c("SPSS", "SAS", "Stata", "R", "GraphPad_Prism", "MATLAB")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+While Bob found SPSS to be in sharp decline since 2009, its decline in my
+dataset started in 2013.
+SAS and Stata had a gentle increase in use but seems to plateau.
+Interestingly he also found a peak usage of SAS in 2010 and of GraphPad Prism in
+2013, then a decline.
+If we assume a lag of 4 years between "epidemiology" papers and general papers,
+the plateau we see with SAS might be the beginning of a decline, an it does not
+look good for GraphPad Prism in the coming years.
+
+What if we remove SPSS from the graph?
+
+```{r, echo=FALSE, fig.cap='Number of epidemiology scholarly articles by year, after removing SPSS'}
+all_epi %>%
+    filter(!soft %in% c("SPSS", "WinBUGS", "OpenBUGS", "JAGS", "Stan", "Julia", "NCSS",
+                        "SUDAAN", "Minitab")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+Like in the paper by Bob, R is pulling away from other softwares and will
+probably catch SAS and Stata in a couple of years.
+But this time he's not alone: GraphPad Prism looks like it receives quite a good
+chunk of users.
+I'm surprised and not.
+I knew it was popular in medical research, but not to this point.
+It has very good graphics, but it is somewhat limited regarding analytics.
+It is surprising for epidemiology area of research, as epidemiologists often
+use advanced analytic methods (or at least, they like to do that `r emo::ji("wink")`).
+On the other hand, epidemiology is a very vast field, and there are all kind of
+research requiring different analytic approaches.
+Ease of use and not requiring any programming skills might be high on the list
+of epidemiologists for choosing a stat software.
+
+Of note, we can see the slow rise of python.
+Epidemiologic methods are slowly being integrated into python and I guess this
+rise will continue for the coming years.
+
+## And if we look into specific epidemiology journals?
+
+That was a very broad search, but we can restrict the search to some specific
+journals, based on [Jane Biosemantic Search](http://jane.biosemantics.org/) (and
+my opinion), instead of using the keyword "epidemiology":
+
+| Journal ("human epidemiology")          | Veterinary epidemiology journal     |
+|-----------------------------------------|-------------------------------------|
+| Epidemiology                            | Veterinary Record                   |
+| American Journal of Epidemiology        | Preventive Veterinary Medicine      |
+| Transboundary and Emerging Diseases     | Transboundary and Emerging Diseases |
+| Annals of Epidemiology                  | Zoonoses and Public Health          |
+| Journal of Clinical Epidemiology        | BMC Veterinary Research             |
+| Emerging Infectious Diseases            | Vector Borne and Zoonotic Diseases  |
+| American Journal of Preventive Medicine | Acta Veterinaria Scandinavica       |
+| American Journal of Public Health       |                                     |
+| European Journal of Epidemiology        |                                     |
+
+```{r, echo=FALSE, fig.cap='Number of scholarly articles by year, within "human" epidemiology journals.'}
+stat_epi %>%
+    filter(!soft %in% c("Julia", "NCSS", "Minitab", "Systat", "Statistica", "WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+SAS and Stata are first, but are both declining.
+SPSS maintains its popularity over the years, but might be on a slippery side now.
+SUDAAN appears within these specific journals, and R is slowly increasing its
+share of papers.
+GraphPad Prism is nowhere.
+And surprisingly, python and MATLAB are not there either.
+
+What about in animal health?
+
+```{r, echo=FALSE, fig.cap='Number of scholarly articles by year, within veterinary epidemiology journals.'}
+stat_vetepi %>%
+    filter(!soft %in% c("Julia", "NCSS", "WinBUGS", "OpenBUGS", "JAGS", "Stan", "SUDAAN")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+Wow! that's different!
+SPSS is first, with no real sign of decline.
+There's also more diversity in the softwares used.
+Even if it's a minority, you can find papers using Statistica, Systat, or
+Minitab.
+
+R is second in popularity, and has taken over SAS since 2013.
+While SAS somehow maintain its popularity over the years, probably due to its
+wide use in animal science, Stata is loosing the popularity it gains up to 2014.
+GraphPad Prism is gaining in popularity, but not as much as we've seen before.
+(Note: special care was taken to avoid including papers discussing an actual reptile
+instead of the python programming language in veterinary papers...)
+
+Can we see by journals?
+
+```{r, echo=FALSE, fig.cap='Number of scholarly articles by year and journal, "human" epidemiology, for R, Stata, SAS, SPSS, and SUDAAN.', fig.width=12, fig.height=8}
+epi_journal %>%
+    filter(soft %in% c("R", "Stata", "SAS", "SPSS", "SUDAAN")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    facet_wrap(~ journal) +
+    theme_xkcd()
+```
+
+American Journal of Epidemiology and American Journal of Public Health distort
+somewhat the illustration, as they produced a lot of papers, and mainly with SAS
+and Stata.
+Let's remove them from the graph:
+
+```{r, echo=FALSE, fig.cap='Number of scholarly articles by year and journal, "human" epidemiology, for R, Stata, SAS, SPSS, and SUDAAN (take 2).', fig.width=12, fig.height=8}
+epi_journal %>%
+    filter(soft %in% c("R", "Stata", "SAS", "SPSS", "SUDAAN")) %>%
+    filter(!journal %in% c("American Journal of Epidemiology",
+                           "American Journal of Public Health")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    facet_wrap(~ journal) +
+    theme_xkcd()
+```
+
+According to the journal, and therefore the specific field of research, one or
+the other software between SAS, Stata, SPSS, and R is preferred.
+
+```{r, echo=FALSE, fig.cap='Number of scholarly articles by year and journal, veterinary epidemiology, for R, Stata, SAS, SPSS, and GraphPad Prism.', fig.width=12, fig.height=8}
+vetepi_journal %>%
+    filter(soft %in% c("R", "Stata", "SAS", "SPSS", "GraphPad_Prism")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    facet_wrap(~ journal) +
+    theme_xkcd()
+```
+
+GraphPad Prism and SPSS are popular mainly in more "general" journals like BMC
+Veterinary Research and the Veterinary Record, while a very specific
+epidemiology journal like Preventive Veterinary Medicine see a dominance of R
+since 2013.
+
+## And what about Bayesian softwares?
+
+| Software | Search term                                                                                                       |
+|----------|-------------------------------------------------------------------------------------------------------------------|
+| WinBUGS  | ("WinBUGS" "a Bayesian modelling framework")                                                                      |
+| OpenBUGS | OpenBUGS -WinBUGS                                                                                                 |
+| JAGS     | "JAGS: A program for analysis of Bayesian graphical models using Gibbs sampling" OR "Just An Other Gibbs Sampler" |
+| Stan     | "Stan: A probabilistic programming language" OR "Stan Development Team" OR "The Stan Math Library"                |
+
+```{r, echo=FALSE, fig.cap='Epidemiology scholarly articles using Bayesian softwares.'}
+all_epi %>%
+    filter(soft %in% c("WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+Good to see that Bayesian analyses are more and more popular.
+But using WinBUGS for which development has stopped since 2006?
+
+I also never could figure out how to properly run OpenBUGS on Linux, and the
+development team is very succinct (only one person I believe).
+But very good to see JAGS taking it over, and Stan, which was initially released
+in 2012, to have a remarkable start.
+
+```{r, echo=FALSE, fig.cap='Scholarly articles using Bayesian softwares in "human" epidemiology journals.'}
+stat_epi %>%
+    filter(soft %in% c("WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    ggplot(aes(x = year, y = count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+This is very unexpected to see so few Bayesian papers in epidemiology journals.
+And their authors don't really settle on which software to use.
+However, I'm only looking at specific Bayesian softwares that can be used in
+conjunction (or not) with general statistical softwares.
+But you can also run Bayesian analyses directly into these general softwares
+(PROC MCMC in SAS, MCMCPack or arm in R, bayesmh in Stata, etc.).
+These are more difficult to capture in the Google Scholar search and I did
+not try (yet).
+
+```{r, echo=FALSE, fig.cap='Scholarly articles using Bayesian softwares in veterinary epidemiology journals.'}
+stat_vetepi %>%
+    filter(soft %in% c("WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    ggplot(aes(x = year, y = count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    theme_xkcd()
+```
+
+But in veterinary epidemiology, it looks like they decided to use less WinBUGS,
+and maybe try something else.
+
+## Counterpoint: very specific journals
+
+And if we do the same but within Statistics in Medicine and Statistical Methods
+in Medical Research?
+
+```{r, echo=FALSE, fig.cap='Scholarly articles in Statistics in Medicine and Statistical Methods in Medical Research.'}
+stat_ref %>%
+    filter(!soft %in% c("Julia", "NCSS", "WinBUGS", "OpenBUGS", "JAGS", "Stan",
+                        "SUDAAN", "Systat", "Minitab", "Statistica", "GraphPad_Prism")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    ggtitle("Statistics in Medicine &\nStatistical Methods in Medical Research") +
+    theme_xkcd()
+```
+
+And the winner is: R!
+
+```{r, echo=FALSE, fig.cap='Scholarly Bayesian papers within Statistics in Medicine and Statistical Methods in Medical Research.'}
+stat_ref %>%
+    filter(soft %in% c("WinBUGS", "OpenBUGS", "JAGS", "Stan")) %>%
+    ggplot(aes(x=year, y=count, colour = soft)) +
+    geom_line() +
+    geom_point() +
+    labs(y = "# of hits") +
+    theme(legend.title = element_blank()) +
+    ggtitle("Statistics in Medicine &\nStatistical Methods in Medical Research") +
+    theme_xkcd()
+```
+
+Here again, WinBUGS is well present, but it will be interesting to see if JAGS
+catches up.
+
+### Final note
+
+By the way, there was a single, lonely paper using Julia, found in Statistical
+Methods in Medical Research (which also used R and SAS): [Bayesian accelerated
+failure time model for space-time dependency in a geographically augmented
+survival model](https://www.ncbi.nlm.nih.gov/pubmed/26220537), by Georgiana
+Onicescu et al., from the Medical University of South Carolina.
