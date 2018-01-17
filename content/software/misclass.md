@@ -6,7 +6,7 @@ math = true
 +++
 
 R package to assess misclassification bias in hierarchical longitudinal studies and the effect of various sampling strategies to control for it. This package is part of the scientific paper "Diagnosing intramammary infection: Controlling misclassification bias in
-longitudinal udder health studies" (in press, [Preventive Veterinary Medicine](https://www.journals.elsevier.com/preventive-veterinary-medicine)) and the [2017 SVEPM](http://www.svepm2017.org/) proceedings "Sampling Strategies to Control Misclassification Bias in Longitudinal Udder Health Studies" by Denis Haine, Ian Dohoo, Daniel Scholl, Henryk Stryhn, and Simon Dufour.
+longitudinal udder health studies" (in press, [Preventive Veterinary Medicine](https://www.journals.elsevier.com/preventive-veterinary-medicine)) and the [2017 SVEPM](http://www.svepm2017.org/) proceedings "Sampling Strategies to Control Misclassification Bias in Longitudinal Udder Health Studies" by Denis Haine, Ian Dohoo, Daniel Scholl, Henryk Stryhn, and Simon Dufour. See package webpage at [https://dhaine.github.io/misclass/](https://dhaine.github.io/misclass/).
 
 ## Abstract
 
