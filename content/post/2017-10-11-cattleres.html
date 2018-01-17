@@ -101,16 +101,16 @@ results &lt;- biblioAnalysis(M, sep = &quot;;&quot;)</code></pre>
 ## 9  SCHWARZ EM;KORHONEN PK;CAMPBELL ND;JEX AR;JABBAR A;HALL A;HOWE AC;PELL J;HOFMANN PR;ZHU X;GREGORY TR;LOUKAS A;WILLIAMS BA;ANTOSHECHKIN I;BROWN PW;GASSER RB,(2013),NA                                                        
 ## 10 LI S;KHAFIPOUR E;KRAUSE DO;KROEKER JC;GOZHO GN;PLAIZIER JC,(2012),NA                                                                                                                                                         
 ##     TC TCperYear
-## 1  176      35.2
-## 2   95      23.8
-## 3   87      17.4
-## 4   79      15.8
-## 5   74      14.8
-## 6   73      14.6
-## 7   72      14.4
-## 8   71      14.2
-## 9   67      16.8
-## 10  65      13.0
+## 1  176      29.3
+## 2   95      19.0
+## 3   87      14.5
+## 4   79      13.2
+## 5   74      12.3
+## 6   73      12.2
+## 7   72      12.0
+## 8   71      11.8
+## 9   67      13.4
+## 10  65      10.8
 ## 
 ## 
 ## Most Productive Countries
@@ -232,8 +232,8 @@ DF</code></pre>
 <pre class="r"><code>indices &lt;- Hindex(M, authors = &quot;HAINE D&quot;, sep = &quot;;&quot;, years = 10)
 ## Haine&#39;s impact indices:
 indices$H</code></pre>
-<pre><code>##    Author h_index g_index m_index TC NP
-## 1 HAINE D       3       5     0.5 31  5</code></pre>
+<pre><code>##    Author h_index g_index   m_index TC NP
+## 1 HAINE D       3       5 0.4285714 31  5</code></pre>
 <pre class="r"><code># Haine&#39;s citations
 indices$CitationList</code></pre>
 <pre><code>## [[1]]
@@ -254,36 +254,36 @@ authors=gsub(&quot;,&quot;, &quot; &quot;, names(results$Authors)[1:30])
 indices &lt;- Hindex(M, authors, sep = &quot;;&quot;, years = 50)
 indices$H</code></pre>
 <pre><code>##                Author h_index g_index   m_index  TC NP
-## 1       MCALLISTER TA      12      19 2.0000000 502 66
-## 2          BARKEMA HW      13      18 2.1666667 465 63
-## 3            WEARY DM      10      14 1.6666667 293 41
-## 4          LEBLANC SJ      13      21 2.1666667 487 40
-## 5             ORSEL K      10      14 1.6666667 266 35
+## 1       MCALLISTER TA      12      19 1.7142857 502 66
+## 2          BARKEMA HW      13      18 1.8571429 465 63
+## 3            WEARY DM      10      14 1.4285714 293 41
+## 4          LEBLANC SJ      13      21 1.8571429 487 40
+## 5             ORSEL K      10      14 1.4285714 266 35
 ## 6  VON KEYSERLINGKMAG       0       0 0.0000000   0  0
 ## 7            DE BUCKJ       0       0 0.0000000   0  0
-## 8          DEVRIES TJ       7       9 1.1666667 144 31
-## 9           LESLIE KE      11      16 1.8333333 295 30
-## 10        DUFFIELD TF       7      13 1.1666667 183 29
-## 11          KELTON DF      10      15 1.6666667 266 29
-## 12         STANFORD K       7      11 1.1666667 160 28
-## 13        BUCZINSKI S       7      10 1.1666667 141 26
-## 14          MIGLIOR F      10      15 1.6666667 253 26
+## 8          DEVRIES TJ       7       9 1.0000000 144 31
+## 9           LESLIE KE      11      16 1.5714286 295 30
+## 10        DUFFIELD TF       7      13 1.0000000 183 29
+## 11          KELTON DF      10      15 1.4285714 266 29
+## 12         STANFORD K       7      11 1.0000000 160 28
+## 13        BUCZINSKI S       7      10 1.0000000 141 26
+## 14          MIGLIOR F      10      15 1.4285714 253 26
 ## 15      DE PASSILLEAM       0       0 0.0000000   0  0
-## 16           RUSHEN J      10      14 1.6666667 238 25
-## 17          AMETAJ BN       8      11 1.3333333 148 22
-## 18          COLAZO MG       7      10 1.1666667 106 22
-## 19      BEAUCHEMIN KA      10      16 1.6666667 271 21
-## 20           KEEFE GP       7      10 1.1666667 124 20
-## 21         CHAPINAL N      10      17 1.6666667 306 19
-## 22            GUAN LL       8      13 1.3333333 187 19
-## 23          PENNER GB       8      14 1.3333333 218 19
-## 24             WANG Y       8      10 1.3333333 131 20
-## 25           DUFOUR S       7      11 1.1666667 144 18
-## 26        KASTELIC JP       8      10 1.3333333 121 17
-## 27              OBA M       8      12 1.3333333 166 17
-## 28           PEARL DL       5       7 0.8333333  60 17
-## 29            DUBUC J       6      10 1.0000000 105 16
-## 30             WOLF R       8      11 1.6000000 143 16</code></pre>
+## 16           RUSHEN J      10      14 1.4285714 238 25
+## 17          AMETAJ BN       8      11 1.1428571 148 22
+## 18          COLAZO MG       7      10 1.0000000 106 22
+## 19      BEAUCHEMIN KA      10      16 1.4285714 271 21
+## 20           KEEFE GP       7      10 1.0000000 124 20
+## 21         CHAPINAL N      10      17 1.4285714 306 19
+## 22            GUAN LL       8      13 1.1428571 187 19
+## 23          PENNER GB       8      14 1.1428571 218 19
+## 24             WANG Y       8      10 1.1428571 131 20
+## 25           DUFOUR S       7      11 1.0000000 144 18
+## 26        KASTELIC JP       8      10 1.1428571 121 17
+## 27              OBA M       8      12 1.1428571 166 17
+## 28           PEARL DL       5       7 0.7142857  60 17
+## 29            DUBUC J       6      10 0.8571429 105 16
+## 30             WOLF R       8      11 1.3333333 143 16</code></pre>
 <p>My h-index is 3 (all time 11 on <a href="https://scholar.google.com/citations?user=KFeLZyIAAAAJ&amp;hl=en">Google Scholar</a>, and I have 3 other papers in press, not yet included in this collection, and you need some time for papers to get cited). Barkema, Orsel (University of Calgary), LeBlanc, Leslie, Kelton, Chapinal (University of Guelph), McAllister, Rushen, Beauchemin (Agriculture and Agri-Food Canada), Weary (University of British Columbia), and Miglior (Canadian Dairy Network) have the largest h-index among the top 30 most productive authors. However we see h-index of zero for Von Keyserlingk (University of British Columbia), De Buck (University of Calgary), and De Passillé (Agriculture and Agri-Food Canada). My guess is that their name is wrongly filtered, resulting in a wrong computation of their h-index (Von Keyserlingk and De Buck have 42 and 21 on Google Scholar, respectively. Couldn’t find De Passillé).</p>
 </section>
 <section id="bilbiometric-network-matrices" class="level2">
