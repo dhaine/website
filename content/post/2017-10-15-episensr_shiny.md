@@ -4,7 +4,7 @@ author: Denis Haine
 date: '2017-10-15'
 slug: episensr_shiny
 categories: ['R']
-tags: ["episensr", "#rstats"]
+tags: ["episensr", "rstats"]
 ---
 
 My R package [`episensr`](https://cran.r-project.org/package=episensr

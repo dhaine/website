@@ -4,7 +4,7 @@ author: Denis Haine
 date: '2017-08-21'
 slug: episensr-090-rmd
 categories: ['R']
-tags: ["episensr", "#rstats"]
+tags: ["episensr", "rstats"]
 ---
 
 A small update for my [`episensr`](https://cran.r-project.org/package=episensr

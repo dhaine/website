@@ -4,7 +4,7 @@ author: Denis Haine
 date: '2017-10-11'
 slug: dairyres-rmd
 categories: ['R', 'epidemiology']
-tags: ["dairy", "cow", "#rstats", "epidemiology"]
+tags: ["dairy", "cow", "rstats", "epidemiology"]
 ---
 
 I was curious to see if I could identify some patterns of collaboration and
