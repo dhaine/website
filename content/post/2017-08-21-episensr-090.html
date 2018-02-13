@@ -9,8 +9,23 @@ tags: ["episensr", "rstats"]
 
 
 
-<p>A small update for my <a href="https://cran.r-project.org/package=episensr%20%22episensr%22"><code>episensr</code></a> R package is now available on CRAN. The update focus on misclassification.</p>
-<p>First, covariate misclassification is now available, via the function <code>misclassification_cov</code>. For example, the paper by <a href="http://www.bmj.com/content/330/7495/815">Berry et al.</a> looked if misclassification of the confounding variable <em>in vitro fertilization</em> (IVF), a confounder, resulted wrongly on an association between increase folic acid and having twins. IVF increases the risk of twins, and women undergoing IVF might be more likely to take folic acid supplements, i.e. IVF would be a confounder between vitamins and twins. Data on IVF were not available and a proxy for it was used, <em>period of involuntary childlessness</em>. However, it was a poor proxy for IVF, with a sensitivity of 60% and a specificity of 95%. These bias parameters were assumed to be nondifferential. Here’s the code with <code>episensr</code>:</p>
+<p>A small update for my <a href="https://cran.r-project.org/package=episensr%20%22episensr%22"><code>episensr</code></a> R package is now available on CRAN.
+The update focus on misclassification.</p>
+<p>First, covariate misclassification is now available, via the function
+<code>misclassification_cov</code>.
+For example, the paper by <a href="http://www.bmj.com/content/330/7495/815">Berry et
+al.</a> looked if misclassification of the
+confounding variable <em>in vitro fertilization</em> (IVF), a confounder, resulted
+wrongly on an association between increase folic acid and having twins.
+IVF increases the risk of twins, and women undergoing IVF might be more likely
+to take folic acid supplements, i.e. IVF would be a confounder between vitamins
+and twins.
+Data on IVF were not available and a proxy for it was used, <em>period of
+involuntary childlessness</em>.
+However, it was a poor proxy for IVF, with a sensitivity of 60% and a
+specificity of 95%.
+These bias parameters were assumed to be nondifferential.
+Here’s the code with <code>episensr</code>:</p>
 <pre class="r"><code>library(episensr)
 
 misclassification_cov(array(c(1319, 38054, 5641, 405546, 565, 3583,
@@ -56,8 +71,22 @@ misclassification_cov(array(c(1319, 38054, 5641, 405546, 565, 3583,
 ##    OR due to confounding by misclassified confounder: 1.065867  2.491131
 ##           Mantel-Haenszel OR adjusted for confounder: 2.290469  1.000215
 ## MH OR due to confounding by misclassified confounder: 1.087938  2.491351</code></pre>
-<p>While the non-adjusted analysis showed that women taking folic acid were 2.44 times more likely to have twins, after correcting for the misclassification of IVF, risk ratio is now null (= 1.0).</p>
-<p>Second, confidence intervals for corrected association due to exposure misclassification are now available. While previously you could already bootstrapped the estimates, you can also now get the confidence intervals from the variance of the corrected odds ratio estimator, as in <a href="http://onlinelibrary.wiley.com/doi/10.1002/sim.4780070704/full#abstract">Greenland et al.</a> and <a href="http://www.sciencedirect.com/science/article/pii/S1047279706000688">Chu et al.</a>. Using the example in Chu et al. of a case-control study of cigarette smoking and invasive pneumococcal disease, the unadjusted odds ratio is 4.32, with a 95% confidence interval of 2.96 to 6.31. Let’s say the sensitivity of self-reported smoking is 94% and specificity is 97%, for both the case and control groups:</p>
+<p>While the non-adjusted analysis showed that women taking folic acid were 2.44
+times more likely to have twins, after correcting for the misclassification of
+IVF, risk ratio is now null (= 1.0).</p>
+<p>Second, confidence intervals for corrected association due to exposure
+misclassification are now available.
+While previously you could already bootstrapped the estimates, you can also now
+get the confidence intervals from the variance of the corrected odds ratio
+estimator, as in <a href="http://onlinelibrary.wiley.com/doi/10.1002/sim.4780070704/full#abstract">Greenland et
+al.</a>
+and <a href="http://www.sciencedirect.com/science/article/pii/S1047279706000688">Chu et
+al.</a>.
+Using the example in Chu et al. of a case-control study of cigarette smoking and
+invasive pneumococcal disease, the unadjusted odds ratio is 4.32, with a 95%
+confidence interval of 2.96 to 6.31.
+Let’s say the sensitivity of self-reported smoking is 94% and specificity is
+97%, for both the case and control groups:</p>
 <pre class="r"><code>misclassification(matrix(c(126, 92, 71, 224),
                          dimnames = list(c(&quot;Case&quot;, &quot;Control&quot;),
                                          c(&quot;Smoking +&quot;, &quot;Smoking - &quot;)),
@@ -79,7 +108,9 @@ misclassification_cov(array(c(1319, 38054, 5641, 405546, 565, 3583,
 ##                                                              2.5%    97.5%
 ## Misclassification Bias Corrected Relative Risk: 2.377254                  
 ##    Misclassification Bias Corrected Odds Ratio: 5.024508 3.282534 7.690912</code></pre>
-<p>The corrected odds ratio is now 5.02, with a widened 95% confidence interval (3.28 to 7.69). Note the bias despite the large sensitivity and specificity.</p>
+<p>The corrected odds ratio is now 5.02, with a widened 95% confidence interval
+(3.28 to 7.69).
+Note the bias despite the large sensitivity and specificity.</p>
 <p>You can even reproduce the contour plots in Chu et al. paper!</p>
 <pre class="r"><code>dat &lt;- expand.grid(Se = seq(0.582, 1, 0.02),
                    Sp = seq(0.762, 1, 0.02))
@@ -113,7 +144,7 @@ direct.label(p1, list(&quot;far.from.others.borders&quot;, &quot;calc.boxes&quot
                            hjust=1, vjust=-.5, box.color = NA, cex = .9,
                            fill = &quot;transparent&quot;, &quot;draw.rects&quot;))</code></pre>
 <div class="figure"><span id="fig:unnamed-chunk-3"></span>
-<img src="/post/2017-08-21-episensr-090_files/figure-html/unnamed-chunk-3-1.png" alt="Contour plot of point estimate of corrected odds ratio (OR)" width="672" />
+<img src="/rmarkdown-libs/figure-html4/unnamed-chunk-3-1.png" alt="Contour plot of point estimate of corrected odds ratio (OR)" width="672" />
 <p class="caption">
 Figure 1: Contour plot of point estimate of corrected odds ratio (OR)
 </p>
@@ -146,7 +177,7 @@ direct.label(p3, list(&quot;far.from.others.borders&quot;, &quot;calc.boxes&quot
                            hjust=1, vjust=-.5, box.color = NA, cex = .9,
                            fill = &quot;transparent&quot;, &quot;draw.rects&quot;))</code></pre>
 <div class="figure"><span id="fig:unnamed-chunk-4"></span>
-<img src="/post/2017-08-21-episensr-090_files/figure-html/unnamed-chunk-4-1.png" alt="Contour plot of 95% lower confidence limit of corrected OR" width="672" />
+<img src="/rmarkdown-libs/figure-html4/unnamed-chunk-4-1.png" alt="Contour plot of 95% lower confidence limit of corrected OR" width="672" />
 <p class="caption">
 Figure 2: Contour plot of 95% lower confidence limit of corrected OR
 </p>

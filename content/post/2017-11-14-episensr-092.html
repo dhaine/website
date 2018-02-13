@@ -9,31 +9,57 @@ tags: ["episensr", "rstats"]
 
 
 
-<p>Bug fixes were brought to <a href="https://cran.r-project.org/package=episensr%20%22episensr%22"><code>episensr</code></a> R package, regarding the use of distributions and computations of odds and risk ratios in <code>probsens.conf</code> function for the probabilistic sensitivity analysis for unmeasured confounder. Improvement on the use of distributions was also brought to other <code>probsens</code> series of functions. Let’s run the example from <a href="https://shop.lww.com/Modern-Epidemiology/p/9781451190052">Modern Epidemiology by Rothman, Greenland &amp; Lash</a>, on page 365-366.</p>
-<p>This example is taken from a paper by <a href="https://www.ncbi.nlm.nih.gov/pubmed/7927843">Greenland et al. (1994)</a>, looking at the association between occupational resins exposure and lung cancer mortality, where smoking is an unmeasured potential confounder. The 2-by-2 table is the following:</p>
+<p>Bug fixes were brought to <a href="https://cran.r-project.org/package=episensr%20%22episensr%22"><code>episensr</code></a> R package, regarding the use of distributions and computations of
+odds and risk ratios in <code>probsens.conf</code> function for the probabilistic
+sensitivity analysis for unmeasured confounder.
+Improvement on the use of distributions was also brought to other <code>probsens</code>
+series of functions.
+Let’s run the example from <a href="https://shop.lww.com/Modern-Epidemiology/p/9781451190052">Modern Epidemiology by Rothman, Greenland &amp;
+Lash</a>, on page 365-366.</p>
+<p>This example is taken from a paper by <a href="https://www.ncbi.nlm.nih.gov/pubmed/7927843">Greenland et al.
+(1994)</a>, looking at the association
+between occupational resins exposure and lung cancer mortality, where smoking is
+an unmeasured potential confounder.
+The 2-by-2 table is the following:</p>
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: right;"></th>
-<th style="text-align: center;">Resins exposed</th>
-<th style="text-align: center;">Resins unexposed</th>
+<th align="right"></th>
+<th align="center">Resins exposed</th>
+<th align="center">Resins unexposed</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">Cases</td>
-<td style="text-align: center;">45</td>
-<td style="text-align: center;">94</td>
+<td align="right">Cases</td>
+<td align="center">45</td>
+<td align="center">94</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">Controls</td>
-<td style="text-align: center;">257</td>
-<td style="text-align: center;">945</td>
+<td align="right">Controls</td>
+<td align="center">257</td>
+<td align="center">945</td>
 </tr>
 </tbody>
 </table>
-<p>After adjustment for age and year at death, Greenland et al. found an OR of 1.77 (95% CI from 1.18 to 2.64). Is smoking, for which they had no data about, had an effect on this association? How large the association between resins and smoking had to be to remove the association between resins and lung cancer association after adjustment for smoking? For this, you have to know 3 bias parameters: the association between smoking and lung cancer, the prevalence of smoking among those unexposed to resins, and the prevalence of smoking in those exposed to resins.</p>
-<p>Prior probability distributions are given to each of these bias parameters. Prevalences of smoking in those exposed to resins, and of smoking in those unexposed to resins receive prior distributions that are uniform between 0.40 and 0.70. Prior distribution for the odds ratio associating smoking with lung cancer mortality is log-normal with 95% limits of 5 and 15. How to find the parameters of this distribution? Its mean is [ln(15) + ln(5)] / 2 = 2.159, and its standard deviation is [ln(15) - ln(5)] / 3.92 = 0.28, and it looks like this:</p>
+<p>After adjustment for age and year at death, Greenland et al. found an OR of 1.77
+(95% CI from 1.18 to 2.64).
+Is smoking, for which they had no data about, had an effect on this association?
+How large the association between resins and smoking had to be to remove the
+association between resins and lung cancer association after adjustment for
+smoking?
+For this, you have to know 3 bias parameters: the association between smoking
+and lung cancer, the prevalence of smoking among those unexposed to resins, and
+the prevalence of smoking in those exposed to resins.</p>
+<p>Prior probability distributions are given to each of these bias parameters.
+Prevalences of smoking in those exposed to resins, and of smoking in those
+unexposed to resins receive prior distributions that are uniform between 0.40
+and 0.70.
+Prior distribution for the odds ratio associating smoking with lung cancer
+mortality is log-normal with 95% limits of 5 and 15.
+How to find the parameters of this distribution?
+Its mean is [ln(15) + ln(5)] / 2 = 2.159, and its standard deviation is
+[ln(15) - ln(5)] / 3.92 = 0.28, and it looks like this:</p>
 <pre class="r"><code>set.seed(123)
 x &lt;- rlnorm(10000, meanlog = 2.159, sdlog = 0.28)
 quantile(x, c(0.025, 0.975))</code></pre>
@@ -41,7 +67,7 @@ quantile(x, c(0.025, 0.975))</code></pre>
 ##  4.979672 14.959055</code></pre>
 <pre class="r"><code>plot(density(x))</code></pre>
 <div class="figure"><span id="fig:unnamed-chunk-1"></span>
-<img src="/post/2017-11-14-episensr-092_files/figure-html/unnamed-chunk-1-1.png" alt="Log-normal distribution with meanlog = 2.159 and sdlog = 0.28." width="672" />
+<img src="/rmarkdown-libs/figure-html4/unnamed-chunk-1-1.png" alt="Log-normal distribution with meanlog = 2.159 and sdlog = 0.28." width="672" />
 <p class="caption">
 Figure 1: Log-normal distribution with meanlog = 2.159 and sdlog = 0.28.
 </p>
@@ -81,14 +107,18 @@ res</code></pre>
 ## RR (SMR) -- systematic and random error:          2.459242
 ##            OR (SMR) -- systematic error:          2.485622
 ## OR (SMR) -- systematic and random error:          2.956335</code></pre>
-<p>The median adjusted OR is 1.76 [1.25,2.49]. The ratio of the two 95% CI bounds is 2.49/1.25 = 1.99. The ratio from the conventional 95% confidence limits was 2.64/1.18 = 2.24. These 2 ratios are pretty, and therefore our uncertainty about confounding is similar to our uncertainty about random error.</p>
+<p>The median adjusted OR is 1.76 [1.25,2.49].
+The ratio of the two 95% CI bounds is 2.49/1.25 = 1.99.
+The ratio from the conventional 95% confidence limits was 2.64/1.18 = 2.24.
+These 2 ratios are pretty, and therefore our uncertainty about confounding is
+similar to our uncertainty about random error.</p>
 <p>You can even plot the bias-adjusted OR including both systematic and random error:</p>
 <pre class="r"><code>library(ggplot2)
 ggplot(res$sim.df, aes(x = tot.ORadj.smr)) +
     geom_histogram(binwidth = .1, colour = &quot;blue&quot;, fill = &quot;white&quot;) +
     xlab(&quot;OR adjusted for confounding and random error&quot;)</code></pre>
 <div class="figure"><span id="fig:unnamed-chunk-3"></span>
-<img src="/post/2017-11-14-episensr-092_files/figure-html/unnamed-chunk-3-1.png" alt="Distribution of the 50,000 confounder-adjusted odds ratios." width="672" />
+<img src="/rmarkdown-libs/figure-html4/unnamed-chunk-3-1.png" alt="Distribution of the 50,000 confounder-adjusted odds ratios." width="672" />
 <p class="caption">
 Figure 2: Distribution of the 50,000 confounder-adjusted odds ratios.
 </p>

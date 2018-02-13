@@ -29,7 +29,7 @@ ignoreFiles = ["\\.Rmd$"]
   organization = "Université de Montréal"
   organization_url = ""
   avatar = "dh2.jpg"
-  email = "denis.haine@umontreal.ca"
+  email = "denis.haine@gmail.com"
   address = ""
   office_hours = ""
   phone = ""
@@ -130,7 +130,7 @@ ignoreFiles = ["\\.Rmd$"]
   [[params.social]]
     icon = "envelope"
     icon_pack = "fa"
-    link = "mailto:denis.haine@umontreal.ca"
+    link = "mailto:denis.haine@gmail.com"
 
   [[params.social]]
     icon = "twitter"
