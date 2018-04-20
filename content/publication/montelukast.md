@@ -1,24 +1,23 @@
-+++
-abstract = "AIM: To evaluate the effectiveness of montelukast as add-on therapy for asthmatic patients who remain uncontrolled with low, moderate or high doses of inhaled corticosteroid monotherapy. DESIGN: An eight-week, multicentre, open-label, observational study. RESULTS: Of 320 patients enrolled, 288 (90.0%) completed the study. Of patients who had uncontrolled asthma symptoms (Canadian Asthma Consensus Guidelines Update, 2003) but were controlled according to the Asthma Control Questionnaire (ACQ score of less than 1.5), 93.9% maintained asthma control at week 8. Of patients with uncontrolled asthma at baseline for both definitions, 63.5% achieved asthma control by week 8. The mean +/- SD ACQ score decreased from 1.13+/-0.28 to 0.57+/-0.50 (P<0.001) for controlled patients at baseline and from 2.38+/-0.73 to 1.03+/-0.80 (P<0.001) for patients who were uncontrolled at baseline, each representing a clinically significant improvement. CONCLUSION: Montelukast add-on therapy is an effective alternative to inhaled corticosteroid monotherapy."
-authors = ["JM Fitzgerald", "S Foucart", "S Coyle", "J Sampalis", "D Haine", "E Psaradellis", "RA McIvor"]
-date = "2009-05-01"
-image_preview = ""
-math = true
-publication_types = ["2"]
-publication = "In *Canadian Respiratory Journal*."
-publication_short = ""
-selected = false
-title = "Montelukast as add-on therapy to inhaled corticosteroids in the management of asthma (the SAS trial)"
-url_code = ""
-url_dataset = ""
-url_pdf = ""
-url_project = ""
-url_slides = ""
-url_video = ""
+---
+title: "Montelukast as add-on therapy to inhaled corticosteroids in the management of asthma (the SAS trial)"
+subtitle: JM Fitzgerald, S Foucart, S Coyle, J Sampalis, D Haine, E Psaradellis, RA McIvor
+date: 2009-05-01
+comments: false
+---
 
-[[url_custom]]
-name = "Link"
-url = "http://pubmedcentralcanada.ca/pmcc/articles/PMC3486710/"
+AIM: To evaluate the effectiveness of montelukast as add-on therapy for
+asthmatic patients who remain uncontrolled with low, moderate or high doses of
+inhaled corticosteroid monotherapy. DESIGN: An eight-week, multicentre,
+open-label, observational study. RESULTS: Of 320 patients enrolled, 288 (90.0%)
+completed the study. Of patients who had uncontrolled asthma symptoms (Canadian
+Asthma Consensus Guidelines Update, 2003) but were controlled according to the
+Asthma Control Questionnaire (ACQ score of less than 1.5), 93.9% maintained
+asthma control at week 8. Of patients with uncontrolled asthma at baseline for
+both definitions, 63.5% achieved asthma control by week 8. The mean +/- SD ACQ
+score decreased from 1.13+/-0.28 to 0.57+/-0.50 (P<0.001) for controlled
+patients at baseline and from 2.38+/-0.73 to 1.03+/-0.80 (P<0.001) for patients
+who were uncontrolled at baseline, each representing a clinically significant
+improvement. CONCLUSION: Montelukast add-on therapy is an effective alternative
+to inhaled corticosteroid monotherapy.
 
-+++
-
+[**In Canadian Respiratory Journal**](http://pubmedcentralcanada.ca/pmcc/articles/PMC3486710/)

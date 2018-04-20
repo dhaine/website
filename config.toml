@@ -1,225 +1,143 @@
 baseurl = "https://denishaine.ca/"
+DefaultContentLanguage = "en"
 title = "Denis Haine"
-copyright = "&copy; 2017 Denis Haine"
-theme = "hugo-academic"
+theme = "beautifulhugo"
+metaDataFormat = "yaml"
+#pygmentsStyle = "trac"
+pygmentsUseClasses = false
+pygmentsCodeFences = false
+#pygmentsCodefencesGuessSyntax = true
+#pygmentsUseClassic = true
+#pygmentOptions = "linenos=inline"
+#disqusShortname = "XXX"
+#googleAnalytics = "XXX"
 enableEmoji = true
-footnotereturnlinkcontents = "<sup>^</sup>"
-
-# Enable comments by entering your Disqus shortname
-disqusShortname = ""
-
-# Enable analytics by entering your Google Analytics tracking ID
-googleAnalytics = ""
-
-# Default language to use (if you setup multilingual support)
-defaultContentLanguage = "en"
-defaultContentLanguageInSubdir = false
 
 ignoreFiles = ["\\.Rmd$"]
 
-[blackfriday]
-  hrefTargetBlank = true
-
-[permalinks]
+[Permalinks]
     post = "/:year/:month/:day/:slug/"
 
-[params]
-  name = "Denis Haine"
-  role = "Post-doctoral researcher"
-  organization = "Université de Montréal"
-  organization_url = ""
-  avatar = "dh2.jpg"
+[Params]
+#  homeTitle = "Beautiful Hugo Theme" # Set a different text for the header on the home page
+  subtitle = "Consulting Services | Epidemiology & Biostatistics"
+#  logo = "img/avatar-icon.png"
+  favicon = "img/favicon.ico"
+  dateFormat = "2006-01-02"
+  commit = false
+  rss = true
+  comments = true
+  readingTime = true
+#  useHLJS = true
+  socialShare = true
+#  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
+  highlightjsVersion = "9.12.0"
+  highlightjsCDN = "//cdn.bootcss.com"
+  highlightjsLang = ["r", "tex", "shell"]
+  highlightjsTheme = "github"
+
+[[Params.bigimg]]
+  src = "img/carlos-muza-84523-unsplash.jpg"
+  desc = "Photo by Carlos Muza on Unsplash"
+[[Params.bigimg]]
+  src = "img/volkan-olmez-73767-unsplash.jpg"
+  desc = "Photo by Volkan Olmez on Unsplash"
+[[Params.bigimg]]
+  src = "img/leon-ephraim-30995-unsplash.jpg"
+  desc = "Photo by Leon Ephraim on Unsplash"
+  # position: see values of CSS background-position.
+  position = "center top"
+#[[Params.bigimg]]
+#  src = "img/dh_utrecht.jpg"
+#  desc = "DH"
+#  position = "top"
+
+[Author]
+#  name = "Denis Haine"
+  website = "denishaine.ca"
   email = "denis.haine@gmail.com"
-  address = ""
-  office_hours = ""
-  phone = ""
-  skype = ""
-  telegram = ""
-
-  # Enable Keybase in Contact section by entering your keybase.io username.
-  keybase = ""
-
-  # Date format (refer to Go's date format: http://flippinggodateformat.com )
-  #   Examples: "Mon, Jan 2, 2006" or "2006-01-02"
-  date_format = "2006-01-02"
-
-  # Enable global LaTeX math rendering?
-  #   If false, you can enable it locally on a per page basis.
-  math = true
-
-  # Highlight.js options
-  #   highlight
-  #     Enable global source code highlighting?  If false, you can
-  #     override it for a particular page in that page's preamble.
-  #
-  #     Example: highlight = true
-  #
-  #   highlight_languages
-  #     Add support for highlighting additional languages. Support for
-  #     languages mentioned here will be included in all pages. You
-  #     can also set this variable for a particular page in that
-  #     page's preamble.
-  #
-  #     Example: highlight_languages = ["go", "lisp", "ocaml"]
-  #
-  #   highlight_style
-  #     Choose a different CSS style for highlighting source
-  #     code. Setting this option in a page's preamble has no
-  #     effect.
-  #
-  #     Example: highlight_style = "github-gist"
-  #
-  #   highlight_version
-  #     Choose the version of highlight.js you want. Setting this
-  #     option in a page's preamble has no effect.
-  #
-  #     Example: highlight_version = "9.9.0"
-  #
-  #   For the list of supported languages, styles, and versions, see:
-  #   https://cdnjs.com/libraries/highlight.js/
-  #
-  #   For more info on the highlighting options, see:
-  #   https://gcushen.github.io/hugo-academic-demo/post/writing-markdown-latex/#highlighting-options
-  highlight = true
-  highlight_languages = []
-  # highlight_style = "github"
-  # highlight_version = "9.9.0"
-
-  # Enable native social sharing buttons?
-  sharing = true
-
-  # Link custom CSS and JS assets
-  #   (relative to /static/css and /static/js respectively)
-  custom_css = []
-  custom_js  = []
-
-  # Publication types.
-  #   Used to categorize publications.
-  #   The index of the publication type in the list is used as its unique numerical identifier.
-  #   The numeric ID is used in a publication's frontmatter to categorize it.
-  #   The language can be edited below.
-  #   For multi-lingual sites, copy this block to each language section at the end of this file.
-  publication_types = [
-    'Uncategorized',  # 0
-    'Conference proceedings',  # 1
-    'Journal',  # 2
-    'Work in progress',  # 3
-    'Technical report',  # 4
-    'Book',  # 5
-    'Book chapter'  # 6
-  ]
-
-  # Social/Academic Networking
-  #
-  # Icon pack "fa" includes the following social network icons:
-  #
-  #   twitter, weibo, linkedin, github, facebook, pinterest, google-plus,
-  #   youtube, instagram, soundcloud
-  #
-  #   For email icon, use "fa" icon pack, "envelope" icon, and
-  #   "mailto:your@email.com" as the link.
-  #
-  #   Full list: https://fortawesome.github.io/Font-Awesome/icons/
-  #
-  # Icon pack "ai" includes the following academic network icons:
-  #
-  #   google-scholar, arxiv, orcid, researchgate, mendeley
-  #
-  #   Full list: https://jpswalsh.github.io/academicons/
-
-  [[params.social]]
-    icon = "envelope"
-    icon_pack = "fa"
-    link = "mailto:denis.haine@gmail.com"
-
-  [[params.social]]
-    icon = "twitter"
-    icon_pack = "fa"
-    link = "//twitter.com/denishaine"
-
-  [[params.social]]
-    icon = "google-scholar"
-    icon_pack = "ai"
-    link = "https://scholar.google.ca/citations?user=KFeLZyIAAAAJ&hl=en"
-
-  [[params.social]]
-    icon = "github"
-    icon_pack = "fa"
-    link = "//github.com/dhaine"
-
-  [[params.social]]
-    icon = "linkedin"
-    icon_pack = "fa"
-    link = "https://ca.linkedin.com/in/denishaine"
-
-#  [[params.social]]
-#    icon = "stack-overflow"
-#    icon_pack = "fa"
-#    link = "https://stackoverflow.com/users/8126916/denis"
-
-  [[params.social]]
-    icon = "researchgate"
-    icon_pack = "ai"
-    link = "https://www.researchgate.net/profile/Denis_Haine"
-
-  [[params.social]]
-    icon = "orcid"
-    icon_pack = "ai"
-    link = "https://orcid.org/0000-0002-6691-7335"
-
-
-# Navigation Links
-#   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the
-#     desired widget in your `content/home/` folder.
-#   The weight parameter defines the order that the links will appear in.
+#  facebook = "username"
+#  googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
+  github = "dhaine"
+#  gitlab = "username"
+#  bitbucket = "username"
+  twitter = "denishaine"
+#  reddit = "username"
+  linkedin = "denishaine"
+#  xing = "username"
+  stackoverflow = "users/8126916/denis"
+#  snapchat = "username"
+#  instagram = "username"
+#  youtube = "user/username" # or channel/channelname
+#  soundcloud = "username"
+#  spotify = "username"
+#  bandcamp = "username"
+#  itchio = "username"
+#  vk = "username"
+#  paypal = "username"
+#  telegram = "username"
+#  orcid = "https://orcid.org/0000-0002-6691-7335"
+#  researchgate = "https://www.researchgate.net/profile/Denis_Haine"
 
 [[menu.main]]
-  name = "Home"
-  url = "#bio"
-  weight = 1
+    name = "Home"
+    url = "/"
+    weight = 1
 
 [[menu.main]]
-  name = "Publications"
-  url = "#publications"
-  weight = 2
+    name = "Services"
+    url = "services/services"
+    weight = 2
 
 [[menu.main]]
-  name = "Blog"
-  url = "#posts"
-  weight = 3
+    name = "Publications"
+    url = "publication"
+    weight = 3
+
+[[menu.main]]
+    name = "Software"
+    url = "software"
+    weight = 4
+
+[[menu.main]]
+    name = "CV"
+    url = "cv/denishaine_cv_en"
+    weight = 5
+
+[[menu.main]]
+    name = "Blog"
+    url = "blog"
+    weight = 6
+
+[[menu.main]]
+    name = "Contact"
+    url = "contact/contact/"
+    weight = 7
 
 #[[menu.main]]
-#  name = "Projects"
-#  url = "#projects"
-#  weight = 4
+#    identifier = "samples"
+#    name = "Samples"
+#    weight = 2
 
-[[menu.main]]
-  name = "Software"
-  url = "software/"
-  weight = 4
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Big Image Sample"
+#    url = "post/2017-03-07-bigimg-sample"
+#    weight = 1
 
-[[menu.main]]
-  name = "CV"
-  url = "cv/denishaine_cv_en.pdf"
-  weight = 5
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Math Sample"
+#    url = "post/2017-03-05-math-sample"
+#    weight = 2
 
-[[menu.main]]
-  name = "Contact"
-  url = "#contact"
-  weight = 6
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Code Sample"
+#    url = "post/2016-03-08-code-sample"
+#    weight = 3
 
-# Taxonomies.
-[taxonomies]
-  tag = "tags"
-  category = "categories"
-  publication_type = "publication_types"
-
-# Languages
-#   Create a [languages.X] block for each language you want, where X is the language ID.
-
-# Configure the English version of the website.
-[languages.en]
-  languageCode = "en-us"
-
-[languages.fr]
-  languageCode = "fr"
+#[[menu.main]]
+#    name = "Tags"
+#    url = "tags"
+#    weight = 3

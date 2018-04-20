@@ -1,0 +1,356 @@
+---
+title: Popularity of statistical softwares in epidemiology
+author: Denis Haine
+date: '2017-11-15'
+slug: popepi-rmd
+categories: ['R', 'epidemiology']
+tags: ["epidemiology", "rstats"]
+---
+
+
+
+<p><a href="http://r4stats.com" title="r4stats.com">Bob Muenchen</a> has a series of articles on the
+<a href="http://r4stats.com/2017/06/19/scholarly-articles/">Popularity of Data Science
+Software</a>.
+He found that SPSS is the most used software, followed by R, SAS, Stata,
+GraphPad Prism, and MATLAB, by looking at scholarly articles in Google Scholar.
+He presents his methodology
+<a href="http://r4stats.com/articles/how-to-search-for-data-science-articles/">here</a>.
+While he’s showing popularity (or market share) of several softwares for data
+science, statistical analysis, machine learning, artificial intelligence,
+predictive analytics, business analytics, and business intelligence, I was
+always wondering what the results would be like for my specific field,
+epidemiology.
+So let’s try to use the same approach, but for softwares more likely to be used
+in epidemiology, and trying to focus on epidemiology papers.</p>
+<div id="the-search" class="section level2">
+<h2>The search</h2>
+<p>Here’s the list of softwares I’m looking at:</p>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="90%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">Software</th>
+<th align="center">Search term</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">R</td>
+<td align="center">“the R software” OR “the R project” OR “r project org” OR “R development core” OR ggplot2 OR “r function” OR “r package”</td>
+</tr>
+<tr class="even">
+<td align="right">Systat</td>
+<td align="center">Systat</td>
+</tr>
+<tr class="odd">
+<td align="right">Statistica</td>
+<td align="center">“Statistica” and (Statsoft OR Dell OR Tibco OR “Quest Software” OR “Francisco Partners”)</td>
+</tr>
+<tr class="even">
+<td align="right">Stata</td>
+<td align="center">(“stata” “college station”) OR “StataCorp” OR “Stata Corp” OR “Stata Journal” OR “Stata Press” OR “stata command” OR “stata module”</td>
+</tr>
+<tr class="odd">
+<td align="right">SPSS</td>
+<td align="center">SPSS</td>
+</tr>
+<tr class="even">
+<td align="right">SAS</td>
+<td align="center">“SAS Institute”</td>
+</tr>
+<tr class="odd">
+<td align="right">Python</td>
+<td align="center">python -author:python -snake</td>
+</tr>
+<tr class="even">
+<td align="right">NCSS</td>
+<td align="center">“Number Cruncher Statistical System”</td>
+</tr>
+<tr class="odd">
+<td align="right">Minitab</td>
+<td align="center">Minitab</td>
+</tr>
+<tr class="even">
+<td align="right">MATLAB</td>
+<td align="center">MATLAB</td>
+</tr>
+<tr class="odd">
+<td align="right">Julia</td>
+<td align="center">“Julia: A Fast Dynamic Language for Technical Computing”</td>
+</tr>
+<tr class="even">
+<td align="right">SUDAAN</td>
+<td align="center">SUDAAN</td>
+</tr>
+</tbody>
+</table>
+<p>You might wonder why Julia? Just for my own curiosity!
+And if you’re stranger to epidemiology, you might also wonder about SUDAAN,
+which is a specific software package for the analysis of surveys, used either as
+a stand-alone or in conjunction with SAS.</p>
+<p>To these search terms, I only added “epidemiology” to get papers from Google
+Scholar and counting the number of hits.</p>
+</div>
+<div id="results" class="section level2">
+<h2>Results!</h2>
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-2-1.png" alt="Number of epidemiology scholarly articles in 2016, according to statistical softwares." width="672" />
+<p class="caption">
+Figure 1: Number of epidemiology scholarly articles in 2016, according to statistical softwares.
+</p>
+</div>
+<p>So like Bob found in an overall search, SPSS is dominant as well in my search
+within the epidemiology keyword.
+But the podium is different.
+While he found R and SAS to complete the podium, with a chasing group made of
+Stata, GraphPad Prism, and MATLAB, I have SPSS followed by a close group made of
+SAS, Stata, R, and GraphPad Prism in that order.</p>
+<p>And what about over the years for the first six softwares found above?</p>
+<div class="figure"><span id="fig:unnamed-chunk-3"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-3-1.png" alt="Number of epidemiology scholarly articles by year, according to statistical softwares." width="672" />
+<p class="caption">
+Figure 2: Number of epidemiology scholarly articles by year, according to statistical softwares.
+</p>
+</div>
+<p>While Bob found SPSS to be in sharp decline since 2009, its decline in my
+dataset started in 2013.
+SAS and Stata had a gentle increase in use but seems to plateau.
+Interestingly he also found a peak usage of SAS in 2010 and of GraphPad Prism in
+2013, then a decline.
+If we assume a lag of 4 years between “epidemiology” papers and general papers,
+the plateau we see with SAS might be the beginning of a decline, an it does not
+look good for GraphPad Prism in the coming years.</p>
+<p>What if we remove SPSS from the graph?</p>
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-4-1.png" alt="Number of epidemiology scholarly articles by year, after removing SPSS" width="672" />
+<p class="caption">
+Figure 3: Number of epidemiology scholarly articles by year, after removing SPSS
+</p>
+</div>
+<p>Like in the paper by Bob, R is pulling away from other softwares and will
+probably catch SAS and Stata in a couple of years.
+But this time he’s not alone: GraphPad Prism looks like it receives quite a good
+chunk of users.
+I’m surprised and not.
+I knew it was popular in medical research, but not to this point.
+It has very good graphics, but it is somewhat limited regarding analytics.
+It is surprising for epidemiology area of research, as epidemiologists often
+use advanced analytic methods (or at least, they like to do that 😉).
+On the other hand, epidemiology is a very vast field, and there are all kind of
+research requiring different analytic approaches.
+Ease of use and not requiring any programming skills might be high on the list
+of epidemiologists for choosing a stat software.</p>
+<p>Of note, we can see the slow rise of python.
+Epidemiologic methods are slowly being integrated into python and I guess this
+rise will continue for the coming years.</p>
+</div>
+<div id="and-if-we-look-into-specific-epidemiology-journals" class="section level2">
+<h2>And if we look into specific epidemiology journals?</h2>
+<p>That was a very broad search, but we can restrict the search to some specific
+journals, based on <a href="http://jane.biosemantics.org/">Jane Biosemantic Search</a> (and
+my opinion), instead of using the keyword “epidemiology”:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Journal (“human epidemiology”)</th>
+<th>Veterinary epidemiology journal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Epidemiology</td>
+<td>Veterinary Record</td>
+</tr>
+<tr class="even">
+<td>American Journal of Epidemiology</td>
+<td>Preventive Veterinary Medicine</td>
+</tr>
+<tr class="odd">
+<td>Transboundary and Emerging Diseases</td>
+<td>Transboundary and Emerging Diseases</td>
+</tr>
+<tr class="even">
+<td>Annals of Epidemiology</td>
+<td>Zoonoses and Public Health</td>
+</tr>
+<tr class="odd">
+<td>Journal of Clinical Epidemiology</td>
+<td>BMC Veterinary Research</td>
+</tr>
+<tr class="even">
+<td>Emerging Infectious Diseases</td>
+<td>Vector Borne and Zoonotic Diseases</td>
+</tr>
+<tr class="odd">
+<td>American Journal of Preventive Medicine</td>
+<td>Acta Veterinaria Scandinavica</td>
+</tr>
+<tr class="even">
+<td>American Journal of Public Health</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>European Journal of Epidemiology</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-5-1.png" alt="Number of scholarly articles by year, within &quot;human&quot; epidemiology journals." width="672" />
+<p class="caption">
+Figure 4: Number of scholarly articles by year, within “human” epidemiology journals.
+</p>
+</div>
+<p>SAS and Stata are first, but are both declining.
+SPSS maintains its popularity over the years, but might be on a slippery side now.
+SUDAAN appears within these specific journals, and R is slowly increasing its
+share of papers.
+GraphPad Prism is nowhere.
+And surprisingly, python and MATLAB are not there either.</p>
+<p>What about in animal health?</p>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-6-1.png" alt="Number of scholarly articles by year, within veterinary epidemiology journals." width="672" />
+<p class="caption">
+Figure 5: Number of scholarly articles by year, within veterinary epidemiology journals.
+</p>
+</div>
+<p>Wow! that’s different!
+SPSS is first, with no real sign of decline.
+There’s also more diversity in the softwares used.
+Even if it’s a minority, you can find papers using Statistica, Systat, or
+Minitab.</p>
+<p>R is second in popularity, and has taken over SAS since 2013.
+While SAS somehow maintain its popularity over the years, probably due to its
+wide use in animal science, Stata is loosing the popularity it gains up to 2014.
+GraphPad Prism is gaining in popularity, but not as much as we’ve seen before.
+(Note: special care was taken to avoid including papers discussing an actual reptile
+instead of the python programming language in veterinary papers…)</p>
+<p>Can we see by journals?</p>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-7-1.png" alt="Number of scholarly articles by year and journal, &quot;human&quot; epidemiology, for R, Stata, SAS, SPSS, and SUDAAN." width="1152" />
+<p class="caption">
+Figure 6: Number of scholarly articles by year and journal, “human” epidemiology, for R, Stata, SAS, SPSS, and SUDAAN.
+</p>
+</div>
+<p>American Journal of Epidemiology and American Journal of Public Health distort
+somewhat the illustration, as they produced a lot of papers, and mainly with SAS
+and Stata.
+Let’s remove them from the graph:</p>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-8-1.png" alt="Number of scholarly articles by year and journal, &quot;human&quot; epidemiology, for R, Stata, SAS, SPSS, and SUDAAN (take 2)." width="1152" />
+<p class="caption">
+Figure 7: Number of scholarly articles by year and journal, “human” epidemiology, for R, Stata, SAS, SPSS, and SUDAAN (take 2).
+</p>
+</div>
+<p>According to the journal, and therefore the specific field of research, one or
+the other software between SAS, Stata, SPSS, and R is preferred.</p>
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-9-1.png" alt="Number of scholarly articles by year and journal, veterinary epidemiology, for R, Stata, SAS, SPSS, and GraphPad Prism." width="1152" />
+<p class="caption">
+Figure 8: Number of scholarly articles by year and journal, veterinary epidemiology, for R, Stata, SAS, SPSS, and GraphPad Prism.
+</p>
+</div>
+<p>GraphPad Prism and SPSS are popular mainly in more “general” journals like BMC
+Veterinary Research and the Veterinary Record, while a very specific
+epidemiology journal like Preventive Veterinary Medicine see a dominance of R
+since 2013.</p>
+</div>
+<div id="and-what-about-bayesian-softwares" class="section level2">
+<h2>And what about Bayesian softwares?</h2>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="91%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Software</th>
+<th>Search term</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WinBUGS</td>
+<td>(“WinBUGS” “a Bayesian modelling framework”)</td>
+</tr>
+<tr class="even">
+<td>OpenBUGS</td>
+<td>OpenBUGS -WinBUGS</td>
+</tr>
+<tr class="odd">
+<td>JAGS</td>
+<td>“JAGS: A program for analysis of Bayesian graphical models using Gibbs sampling” OR “Just An Other Gibbs Sampler”</td>
+</tr>
+<tr class="even">
+<td>Stan</td>
+<td>“Stan: A probabilistic programming language” OR “Stan Development Team” OR “The Stan Math Library”</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:unnamed-chunk-10"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-10-1.png" alt="Epidemiology scholarly articles using Bayesian softwares." width="672" />
+<p class="caption">
+Figure 9: Epidemiology scholarly articles using Bayesian softwares.
+</p>
+</div>
+<p>Good to see that Bayesian analyses are more and more popular.
+But using WinBUGS for which development has stopped since 2006?</p>
+<p>I also never could figure out how to properly run OpenBUGS on Linux, and the
+development team is very succinct (only one person I believe).
+But very good to see JAGS taking it over, and Stan, which was initially released
+in 2012, to have a remarkable start.</p>
+<div class="figure"><span id="fig:unnamed-chunk-11"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-11-1.png" alt="Scholarly articles using Bayesian softwares in &quot;human&quot; epidemiology journals." width="672" />
+<p class="caption">
+Figure 10: Scholarly articles using Bayesian softwares in “human” epidemiology journals.
+</p>
+</div>
+<p>This is very unexpected to see so few Bayesian papers in epidemiology journals.
+And their authors don’t really settle on which software to use.
+However, I’m only looking at specific Bayesian softwares that can be used in
+conjunction (or not) with general statistical softwares.
+But you can also run Bayesian analyses directly into these general softwares
+(PROC MCMC in SAS, MCMCPack or arm in R, bayesmh in Stata, etc.).
+These are more difficult to capture in the Google Scholar search and I did
+not try (yet).</p>
+<div class="figure"><span id="fig:unnamed-chunk-12"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-12-1.png" alt="Scholarly articles using Bayesian softwares in veterinary epidemiology journals." width="672" />
+<p class="caption">
+Figure 11: Scholarly articles using Bayesian softwares in veterinary epidemiology journals.
+</p>
+</div>
+<p>But in veterinary epidemiology, it looks like they decided to use less WinBUGS,
+and maybe try something else.</p>
+</div>
+<div id="counterpoint-very-specific-journals" class="section level2">
+<h2>Counterpoint: very specific journals</h2>
+<p>And if we do the same but within Statistics in Medicine and Statistical Methods
+in Medical Research?</p>
+<div class="figure"><span id="fig:unnamed-chunk-13"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-13-1.png" alt="Scholarly articles in Statistics in Medicine and Statistical Methods in Medical Research." width="672" />
+<p class="caption">
+Figure 12: Scholarly articles in Statistics in Medicine and Statistical Methods in Medical Research.
+</p>
+</div>
+<p>And the winner is: R!</p>
+<div class="figure"><span id="fig:unnamed-chunk-14"></span>
+<img src="/blog/2017-11-15-popepi_files/figure-html/unnamed-chunk-14-1.png" alt="Scholarly Bayesian papers within Statistics in Medicine and Statistical Methods in Medical Research." width="672" />
+<p class="caption">
+Figure 13: Scholarly Bayesian papers within Statistics in Medicine and Statistical Methods in Medical Research.
+</p>
+</div>
+<p>Here again, WinBUGS is well present, but it will be interesting to see if JAGS
+catches up.</p>
+<div id="final-note" class="section level3">
+<h3>Final note</h3>
+<p>By the way, there was a single, lonely paper using Julia, found in Statistical
+Methods in Medical Research (which also used R and SAS): <a href="https://www.ncbi.nlm.nih.gov/pubmed/26220537">Bayesian accelerated
+failure time model for space-time dependency in a geographically augmented
+survival model</a>, by Georgiana
+Onicescu et al., from the Medical University of South Carolina.</p>
+</div>
+</div>

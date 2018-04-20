@@ -1,9 +1,9 @@
-+++
-date = "2017-06-13"
-title = "episensr"
-math = true
-
-+++
+---
+title: "episensr: Basic Sensitivity Analysis of Epidemiologic Results"
+date: "2017-06-13"
+comments: false
+math: true
+---
 
 The R package **episensr** allows to do basic sensitivity analysis of
 epidemiological results as described in **Applying Quantitative Bias Analysis to
