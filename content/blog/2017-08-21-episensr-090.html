@@ -82,7 +82,7 @@ estimator, as in <a href="http://onlinelibrary.wiley.com/doi/10.1002/sim.4780070
 al.</a>
 and <a href="http://www.sciencedirect.com/science/article/pii/S1047279706000688">Chu et
 al.</a>.
-Using the example in Chu et al. of a case-control study of cigarette smoking and
+Using the example in Chu et al. of a case-control study of cigarette smoking and
 invasive pneumococcal disease, the unadjusted odds ratio is 4.32, with a 95%
 confidence interval of 2.96 to 6.31.
 Let’s say the sensitivity of self-reported smoking is 94% and specificity is
@@ -111,7 +111,7 @@ Let’s say the sensitivity of self-reported smoking is 94% and specificity is
 <p>The corrected odds ratio is now 5.02, with a widened 95% confidence interval
 (3.28 to 7.69).
 Note the bias despite the large sensitivity and specificity.</p>
-<p>You can even reproduce the contour plots in Chu et al. paper!</p>
+<p>You can even reproduce the contour plots in Chu et al. paper!</p>
 <pre class="r"><code>dat &lt;- expand.grid(Se = seq(0.582, 1, 0.02),
                    Sp = seq(0.762, 1, 0.02))
 
