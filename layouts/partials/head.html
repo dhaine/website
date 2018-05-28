@@ -3,7 +3,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0,
                                  maximum-scale=1.0">
-  {{ partials "matamo/analytics" . }}
+  {{ partial "matamo/analytics" . }}
 <!-- Site Title, Description, Author, and Favicon -->
 {{- with .Title | default .Site.Title }}
   <title>{{ . }}</title>
