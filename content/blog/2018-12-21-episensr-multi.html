@@ -1,0 +1,245 @@
+---
+title: New in episensr 0.9.3 - Multiple bias analysis
+author: Denis Haine
+date: '2018-12-21'
+slug: episensr-multi
+categories: ['R', 'epidemiology']
+tags: ["epidemiology", "rstats"]
+---
+
+
+
+<p>New version of
+<a href="https://cran.r-project.org/web/packages/episensr/index.html" title="R CRAN">episensr</a>
+available on CRAN!
+Now you can more easily run multiple bias analysis.
+Very often, epidemiologic studies suffer from multiple biases.
+Up to now, it took a bit of “manipulation” to apply a sequence of bias function
+from <code>episensr</code>.
+So here’s the function <code>multiple.bias</code> that allows to pipe corrected 2-by-2
+table from one bias function to an other.</p>
+<p>Let’s take for example the study from <a href="https://www.ncbi.nlm.nih.gov/pubmed/16322894">Chien et al,
+2006</a> looking at the association
+between antidepressant use (AD) and breast cancer (BC):</p>
+<pre class="r"><code>chien &lt;- matrix(c(118, 832, 103, 884),
+                dimnames = list(c(&quot;BC+&quot;, &quot;BC-&quot;), c(&quot;AD+&quot;, &quot;AD-&quot;)),
+                nrow = 2, byrow = TRUE)
+library(knitr)
+kable(chien)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">AD+</th>
+<th align="right">AD-</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BC+</td>
+<td align="right">118</td>
+<td align="right">832</td>
+</tr>
+<tr class="even">
+<td>BC-</td>
+<td align="right">103</td>
+<td align="right">884</td>
+</tr>
+</tbody>
+</table>
+<p>Antidepressant use was established based on pharmacy records.
+However this information was not available for every participant, self-report of
+medication was also used leading to a possible misclassification.
+The cross-classification frequencies of interview responses and pharmacy records
+allowed to determine sensitivity (Se) and specificity (Sp) for cases and
+controls, used in the misclassification bias sensitivity analysis:</p>
+<pre class="r"><code>library(episensr)
+library(magrittr)
+chien %&gt;% misclassification(., type = &quot;exposure&quot;, bias_parms = c(.56, .58, .99, .97))</code></pre>
+<pre><code>## --Observed data-- 
+##          Outcome: BC+ 
+##        Comparing: AD+ vs. AD- 
+## 
+##     AD+ AD-
+## BC+ 118 832
+## BC- 103 884
+## 
+##                                        2.5%     97.5%
+## Observed Relative Risk: 1.1012443 0.9646019 1.2572431
+##    Observed Odds Ratio: 1.2172330 0.9192874 1.6117443
+## ---
+##                                                              2.5%    97.5%
+## Misclassification Bias Corrected Relative Risk: 1.272939                  
+##    Misclassification Bias Corrected Odds Ratio: 1.676452 1.150577 2.442679</code></pre>
+<p>Let’s follow this bias by a selection bias:</p>
+<pre class="r"><code>chien %&gt;% 
+    misclassification(., type = &quot;exposure&quot;, bias_parms = c(.56, .58, .99, .97)) %&gt;%
+    multiple.bias(., bias_function = &quot;selection&quot;, bias_parms = c(.73, .61, .82, .76))</code></pre>
+<pre><code>## 
+## Multiple bias analysis
+## ---
+##                                                 
+## Selection Bias Corrected Relative Risk: 1.192461
+##    Selection Bias Corrected Odds Ratio: 1.512206</code></pre>
+<p>The <code>misclassification</code> output is piped (<code>%&gt;%</code>) into the <code>selection</code> bias
+function thanks to <code>multiple.bias</code>.
+We can also add an unmeasured confounder the same way:</p>
+<pre class="r"><code>chien %&gt;%
+    misclassification(., type = &quot;exposure&quot;, bias_parms = c(.56, .58, .99, .97)) %&gt;%
+    multiple.bias(., bias_function = &quot;selection&quot;,
+                  bias_parms = c(.73, .61, .82, .76)) %&gt;%
+    multiple.bias(., bias_function = &quot;confounders&quot;,
+                  type = &quot;OR&quot;, bias_parms = c(.92, .3, .44))</code></pre>
+<pre><code>## 
+## Multiple bias analysis
+## ---
+##                                        Adjusted OR
+## Standardized Morbidity Ratio: 1.494938    1.011609
+##              Mantel-Haenszel: 1.494938    1.011609</code></pre>
+<div id="probabilistic-methods" class="section level3">
+<h3>Probabilistic methods</h3>
+<p>The same can be realized within a probabilistic framework with the <code>probsens</code>
+series of functions.
+Let’s look first at each single bias analysis, then by combining them.</p>
+<div id="misclassification" class="section level4">
+<h4>Misclassification</h4>
+<pre class="r"><code>set.seed(123)
+mod1 &lt;- chien %&gt;%
+    probsens(., type = &quot;exposure&quot;, reps = 100000,
+             seca.parms = list(&quot;trapezoidal&quot;, c(.45, .5, .6, .65)),
+             seexp.parms = list(&quot;trapezoidal&quot;, c(.4, .48, .58, .63)),
+             spca.parms = list(&quot;trapezoidal&quot;, c(.95, .97, .99, 1)),
+             spexp.parms = list(&quot;trapezoidal&quot;, c(.96, .98, .99, 1)),
+             corr.se = .8, corr.sp = .8)</code></pre>
+<pre class="r"><code>library(ggplot2)
+ggplot(mod1$sim.df, aes(x = corr.OR)) + 
+    geom_histogram(aes(y = ..density..), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+    geom_density(alpha = .2, fill = &quot;#FF6666&quot;) +
+    labs(title = &quot;1. Misclassification bias&quot;,
+         x = &quot;OR without random error incorporated&quot;) +
+    coord_cartesian(xlim = c(0, 3))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="/blog/2018-12-21-episensr-multi_files/figure-html/unnamed-chunk-6-1.png" alt="Misclassification bias." width="672" />
+<p class="caption">
+Figure 1: Misclassification bias.
+</p>
+</div>
+</div>
+<div id="selection-bias" class="section level4">
+<h4>Selection bias</h4>
+<pre class="r"><code>set.seed(123)
+mod2 &lt;- chien %&gt;%
+    probsens.sel(., reps = 100000,
+                 case.exp = list(&quot;logit-normal&quot;, c(-1.1, 0, 0, 1)),
+                 case.nexp = list(&quot;trapezoidal&quot;, c(.75, .85, .95, 1)),
+                 ncase.exp = list(&quot;logit-normal&quot;, c(-1.2, 0, 0, 1)),
+                 ncase.nexp = list(&quot;trapezoidal&quot;, c(0.7, 0.8, 0.9, 1)))</code></pre>
+<pre class="r"><code>ggplot(mod2$sim.df, aes(x = corr.or)) + 
+    geom_histogram(aes(y = ..density..), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+    geom_density(alpha = .2, fill = &quot;#FF6666&quot;) +
+    labs(title = &quot;2. Selection bias&quot;,
+         x = &quot;OR without random error incorporated&quot;) +
+    coord_cartesian(xlim = c(0, 3))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<img src="/blog/2018-12-21-episensr-multi_files/figure-html/unnamed-chunk-8-1.png" alt="Selection bias" width="672" />
+<p class="caption">
+Figure 2: Selection bias
+</p>
+</div>
+</div>
+<div id="confounding" class="section level4">
+<h4>Confounding</h4>
+<pre class="r"><code>set.seed(123)
+mod3 &lt;- chien %&gt;%
+    probsens.conf(., reps = 100000,
+                  prev.exp = list(&quot;logit-normal&quot;, c(-0.75, 0.8, 0, 1)),
+                  prev.nexp = list(&quot;logit-normal&quot;, c(-0.4, 0.8, 0, 1)),
+                  risk = list(&quot;trapezoidal&quot;, c(.2, .58, 1.01, 1.24)))</code></pre>
+<pre class="r"><code>ggplot(mod3$sim.df, aes(x = OR.SMR.or)) + 
+    geom_histogram(aes(y = ..density..), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+    geom_density(alpha = .2, fill = &quot;#FF6666&quot;) +
+    labs(title = &quot;3. Confounding bias&quot;,
+         x = &quot;OR without random error incorporated&quot;) +
+    coord_cartesian(xlim = c(0, 3))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-10"></span>
+<img src="/blog/2018-12-21-episensr-multi_files/figure-html/unnamed-chunk-10-1.png" alt="Confounding." width="672" />
+<p class="caption">
+Figure 3: Confounding.
+</p>
+</div>
+</div>
+<div id="model-2-then-model-3" class="section level4">
+<h4>Model 2 then model 3</h4>
+<pre class="r"><code>set.seed(123)
+chien %&gt;%
+    probsens(., type = &quot;exposure&quot;, reps = 100000,
+             seca.parms = list(&quot;trapezoidal&quot;, c(.45, .5, .6, .65)),
+             seexp.parms = list(&quot;trapezoidal&quot;, c(.4, .48, .58, .63)),
+             spca.parms = list(&quot;trapezoidal&quot;, c(.95, .97, .99, 1)),
+             spexp.parms = list(&quot;trapezoidal&quot;, c(.96, .98, .99, 1)),
+             corr.se = .8, corr.sp = .8) %&gt;%
+    multiple.bias(., bias_function = &quot;probsens.sel&quot;,
+                  case.exp = list(&quot;logit-normal&quot;, c(-1.1, 0, 0, 1)),
+                  case.nexp = list(&quot;trapezoidal&quot;, c(.75, .85, .95, 1)),
+                  ncase.exp = list(&quot;logit-normal&quot;, c(-1.2, 0, 0, 1)),
+                  ncase.nexp = list(&quot;trapezoidal&quot;, c(0.7, 0.8, 0.9, 1)))</code></pre>
+<pre><code>## 
+## Multiple bias analysis
+## ---
+##                                               Median 2.5th percentile
+##            Odds Ratio -- systematic error: 1.1074217        0.9202678
+## Odds Ratio -- systematic and random error: 1.1086260        0.8189285
+##                                            97.5th percentile
+##            Odds Ratio -- systematic error:         1.3517598
+## Odds Ratio -- systematic and random error:         1.5020760</code></pre>
+</div>
+<div id="model-2-then-model-3-then-model-4" class="section level4">
+<h4>Model 2 then model 3 then model 4</h4>
+<pre class="r"><code>set.seed(123)
+mod6 &lt;- chien %&gt;%
+    probsens(., type = &quot;exposure&quot;, reps = 100000,
+             seca.parms = list(&quot;trapezoidal&quot;, c(.45, .5, .6, .65)),
+             seexp.parms = list(&quot;trapezoidal&quot;, c(.4, .48, .58, .63)),
+             spca.parms = list(&quot;trapezoidal&quot;, c(.95, .97, .99, 1)),
+             spexp.parms = list(&quot;trapezoidal&quot;, c(.96, .98, .99, 1)),
+             corr.se = .8, corr.sp = .8) %&gt;%
+    multiple.bias(., bias_function = &quot;probsens.sel&quot;,
+                  case.exp = list(&quot;logit-normal&quot;, c(-1.1, 0, 0, 1)),
+                  case.nexp = list(&quot;trapezoidal&quot;, c(.75, .85, .95, 1)),
+                  ncase.exp = list(&quot;logit-normal&quot;, c(-1.2, 0, 0, 1)),
+                  ncase.nexp = list(&quot;trapezoidal&quot;, c(0.7, 0.8, 0.9, 1))) %&gt;% 
+    multiple.bias(., bias_function = &quot;probsens.conf&quot;,
+                  prev.exp = list(&quot;logit-normal&quot;, c(-0.75, 0.8, 0, 1)),
+                  prev.nexp = list(&quot;logit-normal&quot;, c(-0.4, 0.8, 0, 1)),
+                  risk = list(&quot;trapezoidal&quot;, c(.2, .58, 1.01, 1.24)))</code></pre>
+<pre class="r"><code>ggplot(mod6$sim.df, aes(x = OR.SMR.or)) + 
+    geom_histogram(aes(y = ..density..), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+    geom_density(alpha = .2, fill = &quot;#FF6666&quot;) +
+    labs(title = &quot;6. Misclassification, then\nselection, then confounding bias&quot;,
+         x = &quot;OR without random error incorporated&quot;) +
+    coord_cartesian(xlim = c(0, 3))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-13"></span>
+<img src="/blog/2018-12-21-episensr-multi_files/figure-html/unnamed-chunk-13-1.png" alt="Misclassification followed by selection bias and then confounding bias." width="672" />
+<p class="caption">
+Figure 4: Misclassification followed by selection bias and then confounding bias.
+</p>
+</div>
+<pre class="r"><code>ggplot(mod6$sim.df, aes(x = tot.ORadj.smr)) + 
+    geom_histogram(aes(y = ..density..), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+    geom_density(alpha = .2, fill = &quot;#FF6666&quot;) +
+    labs(title = &quot;6. Misclassification, then\nselection, then confounding bias&quot;,
+         x = &quot;OR with random error incorporated&quot;) +
+    coord_cartesian(xlim = c(0, 3))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<div class="figure"><span id="fig:unnamed-chunk-14"></span>
+<img src="/blog/2018-12-21-episensr-multi_files/figure-html/unnamed-chunk-14-1.png" alt="Same as previous figure but with random error incorporated." width="672" />
+<p class="caption">
+Figure 5: Same as previous figure but with random error incorporated.
+</p>
+</div>
+</div>
+</div>
