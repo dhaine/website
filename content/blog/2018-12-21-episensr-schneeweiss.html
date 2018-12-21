@@ -1,0 +1,204 @@
+---
+title: New in episensr 0.9.3 - Array approach for unmeasured confounders
+author: Denis Haine
+date: '2018-12-21'
+slug: episensr-schneeweiss
+categories: ['R', 'epidemiology']
+tags: ["epidemiology", "rstats"]
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>New version of
+<a href="https://cran.r-project.org/web/packages/episensr/index.html" title="R CRAN">episensr</a>
+available on CRAN!
+Besides now being easier to run <a href="../episensr-multi">multiple bias
+analysis</a>, this new version offers the option to
+check the effect of residual confounding based on the array and rule-out
+approaches (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/pds.1200">Schneeweiss,
+2006</a>).</p>
+<p>Even after controlling for confounding (in the design or analysis of a study),
+some residual confounding can still be present, because:</p>
+<ol style="list-style-type: decimal">
+<li>some confounding factors were not taken into account (not looked at, not
+adjusted for, or no data collected about them),</li>
+<li>you only losely took into account that confounding (still presence of
+differences between groups after control by matching for example, or you
+lost precision on a confounding variable e.g. by categorizing a continuous
+variable),</li>
+<li>subjects were not correctly classified to confounding variables.</li>
+</ol>
+<div id="simple-sensitivity-analyses-in-the-absence-of-external-information-array-approach" class="section level2">
+<h2>Simple sensitivity analyses in the absence of external information: Array approach</h2>
+<p>The <em>array approach</em> by Schneeweis provides a corrected RR based on the
+apparent, confounded, RR, the prevalence of the confounding factor among the
+exposed and unexposed, and the association between the confounder and the outcome.</p>
+<p>Schneeweiss provides the (made-up) example of the association between
+TNF<span class="math inline">\(_\alpha\)</span> blocking agents and Non-Hodgkin (NH) Lymphoma in rheumatoid
+arthritis (RA) patients.
+Assuming an observed relative risk of 2, that 50% of RA patients have a more
+progressive immunologic disease, and that more progressive disease is more
+likely to lead to NH lymphoma:</p>
+<pre class="r"><code>library(episensr)
+confounders.array(crude.risk = 2,
+                  type = &quot;binary&quot;,
+                  bias_parms = c(2.5, 0.1, 0.5))</code></pre>
+<pre><code>## 
+## Adjusted RR: 3.04 
+## 
+## Percent bias: -34.29 
+## 
+## Input Bias Parameters: 
+## ----------------------
+## 
+##     RR(Confounder-Disease): 2.5 
+##   p(Confounder+|Exposure+): 0.1 
+##   p(Confounder+|Exposure-): 0.5</code></pre>
+<p>The function takes values of the observed risk (2.0); if the covariates are
+binary, continuous, or on a risk difference scale; the association between
+confounder and outcome (let’s say here 2.5); the prevalence of the confounder
+among the exposed (let’s say 0.1); and the prevalence of the confounder among
+the unexposed.
+The adjusted RR is 3.04.</p>
+<p>However, it is more interesting if we could keep some factors constant in our
+analysis (the crude risk of 2.0, the prevalence among the unexposed, 0.5), and
+vary the imbalance of the hypothetical unoberved confounder (association
+confounder-outcome from 1 to 5.5; prevalence among exposed, from 0 to 1):</p>
+<pre class="r"><code>dat &lt;- expand.grid(RR_CD = seq(1, 5.5, 0.5), P_C1 = seq(0, 1, 0.1))
+dat$RR_adj &lt;- apply(dat, 1,
+                    function(x) confounders.array(2,
+                                                  type = &quot;binary&quot;,
+                                                  bias_parms = c(x[1],
+                                                                 x[2],
+                                                                 0.5),
+                                                  print = FALSE)[5])</code></pre>
+<p>Then adding fun with 3-d plots!</p>
+<pre class="r"><code>library(lattice)
+library(grid)
+wireframe(RR_adj ~ RR_CD * P_C1,
+          data = dat,
+          xlab = &quot;RR\nconfounder-outcome&quot;,
+          ylab = &quot;Prevalence confounder\namong exposed&quot;,
+          zlab = &quot;Adjusted\nRR&quot;,
+          drape = TRUE, colorkey = TRUE,
+          scales = list(arrows = FALSE, cex = .5, tick.number = 10,
+                        z = list(arrows = FALSE), distance = c(1.5, 1.5, 1.5)),
+          zlim = 0:4,
+          light.source = c(10, 0, 10),
+          col.regions = rainbow(100, s = 1, v = 1,
+                                start = 0, end = max(1, 100 - 1) / 100,
+                                alpha = .8),
+          screen = list(z = -60, x = -60),
+          panel = function(...)
+          {
+              panel.wireframe(...)
+              grid.text(&quot;Observed RR = 1\nPrevalence confounder\namong unexposed = 0.5&quot;,
+                        0.125, 0.175, default.units = &quot;native&quot;)
+          })</code></pre>
+<p><img src="/blog/2018-12-21-episensr-schneeweiss_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Good old <code>lattice</code>…
+But you can have even more fun with <code>plotly</code>:</p>
+<pre class="r"><code>RR_CD &lt;- seq(1, 5.5, 0.5)
+P_C1 &lt;- seq(0, 1, 0.1)
+mat &lt;- outer(RR_CD, P_C1,
+             Vectorize(function (i, j)
+                 confounders.array(2,
+                                   type = &quot;binary&quot;,
+                                   bias_parms = c(i, j, 0.5),
+                                   print = FALSE)[5]))
+library(plotly)
+plot_ly(x = ~P_C1, y = ~RR_CD, z = ~mat) %&gt;%
+    add_surface() %&gt;%
+    layout(scene = list(xaxis = list(title = &quot;Pr conf. in exposed&quot;, nticks = 5),
+                        yaxis = list(title = &quot;RR conf.-RA&quot;, nticks = 5),
+                        zaxis = list(title = &quot;Adjusted RR&quot;, nticks = 5),
+                        aspectmode = &quot;cube&quot;))</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"55e54be679e":["function () ","plotlyVisDat"]},"cur_data":"55e54be679e","attrs":{"55e54be679e":{"x":{},"y":{},"z":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"surface","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Pr conf. in exposed","nticks":5},"yaxis":{"title":"RR conf.-RA","nticks":5},"zaxis":{"title":"Adjusted RR","nticks":5},"aspectmode":"cube"},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":[{"name":"Collaborate","icon":{"width":1000,"ascent":500,"descent":-50,"path":"M487 375c7-10 9-23 5-36l-79-259c-3-12-11-23-22-31-11-8-22-12-35-12l-263 0c-15 0-29 5-43 15-13 10-23 23-28 37-5 13-5 25-1 37 0 0 0 3 1 7 1 5 1 8 1 11 0 2 0 4-1 6 0 3-1 5-1 6 1 2 2 4 3 6 1 2 2 4 4 6 2 3 4 5 5 7 5 7 9 16 13 26 4 10 7 19 9 26 0 2 0 5 0 9-1 4-1 6 0 8 0 2 2 5 4 8 3 3 5 5 5 7 4 6 8 15 12 26 4 11 7 19 7 26 1 1 0 4 0 9-1 4-1 7 0 8 1 2 3 5 6 8 4 4 6 6 6 7 4 5 8 13 13 24 4 11 7 20 7 28 1 1 0 4 0 7-1 3-1 6-1 7 0 2 1 4 3 6 1 1 3 4 5 6 2 3 3 5 5 6 1 2 3 5 4 9 2 3 3 7 5 10 1 3 2 6 4 10 2 4 4 7 6 9 2 3 4 5 7 7 3 2 7 3 11 3 3 0 8 0 13-1l0-1c7 2 12 2 14 2l218 0c14 0 25-5 32-16 8-10 10-23 6-37l-79-259c-7-22-13-37-20-43-7-7-19-10-37-10l-248 0c-5 0-9-2-11-5-2-3-2-7 0-12 4-13 18-20 41-20l264 0c5 0 10 2 16 5 5 3 8 6 10 11l85 282c2 5 2 10 2 17 7-3 13-7 17-13z m-304 0c-1-3-1-5 0-7 1-1 3-2 6-2l174 0c2 0 4 1 7 2 2 2 4 4 5 7l6 18c0 3 0 5-1 7-1 1-3 2-6 2l-173 0c-3 0-5-1-8-2-2-2-4-4-4-7z m-24-73c-1-3-1-5 0-7 2-2 3-2 6-2l174 0c2 0 5 0 7 2 3 2 4 4 5 7l6 18c1 2 0 5-1 6-1 2-3 3-5 3l-174 0c-3 0-5-1-7-3-3-1-4-4-5-6z"},"click":"function(gd) { \n        // is this being viewed in RStudio?\n        if (location.search == '?viewer_pane=1') {\n          alert('To learn about plotly for collaboration, visit:\\n https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html');\n        } else {\n          window.open('https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html', '_blank');\n        }\n      }"}],"cloud":false},"data":[{"colorbar":{"title":"mat","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0196800815612697","rgba(69,10,90,1)"],["0.0323992631684939","rgba(70,15,94,1)"],["0.0463980463980464","rgba(70,20,99,1)"],["0.0598290598290598","rgba(71,25,103,1)"],["0.0746738641475483","rgba(71,29,108,1)"],["0.0868945868945868","rgba(72,33,112,1)"],["0.101315716959115","rgba(72,37,117,1)"],["0.112108918560531","rgba(72,40,120,1)"],["0.123594242015295","rgba(71,44,122,1)"],["0.153846153846154","rgba(69,54,127,1)"],["0.153846153846154","rgba(69,54,127,1)"],["0.153846153846154","rgba(69,54,127,1)"],["0.153846153846154","rgba(69,54,127,1)"],["0.153846153846154","rgba(69,54,127,1)"],["0.189918684710351","rgba(66,65,132,1)"],["0.207502374169041","rgba(64,70,135,1)"],["0.226764721017595","rgba(62,75,137,1)"],["0.257936507936508","rgba(59,84,139,1)"],["0.290598290598291","rgba(56,93,140,1)"],["0.341880341880342","rgba(49,106,142,1)"],["0.404558404558405","rgba(44,121,142,1)"],["0.497129081744466","rgba(37,143,140,1)"],["0.622175557520385","rgba(46,173,128,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1],"y":[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5],"z":[[2,2,2,2,2,2,2,2,2,2,2],[2.5,2.38095238095238,2.27272727272727,2.17391304347826,2.08333333333333,2,1.92307692307692,1.85185185185185,1.78571428571429,1.72413793103448,1.66666666666667],[3,2.72727272727273,2.5,2.30769230769231,2.14285714285714,2,1.875,1.76470588235294,1.66666666666667,1.57894736842105,1.5],[3.5,3.04347826086957,2.69230769230769,2.41379310344828,2.1875,2,1.84210526315789,1.70731707317073,1.59090909090909,1.48936170212766,1.4],[4,3.33333333333333,2.85714285714286,2.5,2.22222222222222,2,1.81818181818182,1.66666666666667,1.53846153846154,1.42857142857143,1.33333333333333],[4.5,3.6,3,2.57142857142857,2.25,2,1.8,1.63636363636364,1.5,1.38461538461538,1.28571428571429],[5,3.84615384615385,3.125,2.63157894736842,2.27272727272727,2,1.78571428571429,1.61290322580645,1.47058823529412,1.35135135135135,1.25],[5.5,4.07407407407407,3.23529411764706,2.68292682926829,2.29166666666667,2,1.7741935483871,1.59420289855072,1.44736842105263,1.32530120481928,1.22222222222222],[6,4.28571428571429,3.33333333333333,2.72727272727273,2.30769230769231,2,1.76470588235294,1.57894736842105,1.42857142857143,1.30434782608696,1.2],[6.5,4.48275862068966,3.42105263157895,2.76595744680851,2.32142857142857,2,1.75675675675676,1.56626506024096,1.41304347826087,1.28712871287129,1.18181818181818]],"type":"surface","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"base_url":"https://plot.ly"},"evals":["config.modeBarButtonsToAdd.0.click"],"jsHooks":[]}</script>
+</div>
+<div id="using-additional-information-external-adjustment" class="section level2">
+<h2>Using additional information: external adjustment</h2>
+<p>You can also use additional information not available in the main study to
+adjust for the effect of confounding.
+Sometimes you can get information from a representative sample to quantify the
+imbalance risk factors that are measured among the exposed group; and from the
+literature (RCT, observational studies) for the association between the
+confounder and the outcome.</p>
+<p>We can use the example of Schneeweiss regarding the association between
+selective COX-2 inhibitor use and the incidence of MI.</p>
+<p>Say we assume an exposure-disease association of 1 (null hypothesis).
+The more the truth is away from the null, the more bias in our estimate.
+However the less relevant unmeasured confounders become.</p>
+<p>Let’s try:</p>
+<pre class="r"><code>confounders.ext(RR = 1, bias_parms = c(0.1, 1.6, 0.1, 0.51))</code></pre>
+<pre><code>## 
+##     Crude RR: 0.96 
+## 
+## Percent bias: -4.03 
+## 
+## Input Bias Parameters: 
+## ----------------------
+## 
+##           RR(Confounder-Disease): 0.1 
+## OR(Exposure category-Confounder): 1.6 
+##                    p(Confounder): 0.1 
+##                      p(Exposure): 0.51</code></pre>
+<p>Same here, the interest lies in using the function over a range of values, while
+keeping some other constant.
+And we can extend to several confounders:</p>
+<pre class="r"><code>dat &lt;- expand.grid(RR_CD = seq(0.1, 1, 0.1))
+dat$nsaid &lt;- apply(dat, 1,
+                   function(x) confounders.ext(1, 
+                                               bias_parms = c(x[1], 0.9, 0.1, 0.4),
+                                               print = FALSE)[7])
+dat$non_user &lt;- apply(dat, 1,
+                      function(x) confounders.ext(1, 
+                                                  bias_parms = c(x[1], 1.03, 0.09,
+                                                                 0.12),
+                                                  print = FALSE)[7])
+dat$naproxen &lt;- apply(dat, 1,
+                      function(x) confounders.ext(1, 
+                                                  bias_parms = c(x[1], 1.15, 0.09,
+                                                                 0.79),
+                                               print = FALSE)[7])
+dat$rof_napro &lt;- apply(dat, 1,
+                       function(x) confounders.ext(1, 
+                                               bias_parms = c(x[1], 1.6, 0.1, 0.51),
+                                               print = FALSE)[7])
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.5
+## ✔ tidyr   0.8.2     ✔ dplyr   0.7.8
+## ✔ readr   1.3.0     ✔ stringr 1.3.1
+## ✔ tibble  1.4.2     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks plotly::filter(), stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>dat2 &lt;- dat %&gt;% gather(nsaid, non_user, naproxen, rof_napro,
+                       key = &quot;COX2&quot;, value = &quot;bias_perc&quot;)
+library(ggplot2)
+ggplot(dat2, aes(x = RR_CD, y = bias_perc, group = COX2, colour = COX2)) +
+    geom_line() +
+    scale_colour_brewer(palette = &quot;Dark2&quot;,
+                        labels = c(&quot;COX-2 vs. naproxen&quot;, &quot;COX-2 vs. non-users&quot;,
+                                   &quot;COX-2 vs. non-selective NSAIDs&quot;,
+                                   &quot;Rofecoxib vs. naproxen&quot;)) +
+    geom_vline(xintercept = 0.7) +
+    xlab(&quot;Association Confounder-Disease (RR)&quot;) +
+    ylab(&quot;Bias of Exposure-Disease Association (RR) in %&quot;) +
+    ggtitle(expression(paste(&quot;Bias as a function of misspecification of the &quot;, RR[CD], &quot; from the literature&quot;))) +
+    theme(legend.position = c(.8, .3),
+          legend.title = element_blank()) +
+    annotate(&quot;text&quot;, label = expression(paste(&quot;Literature estimate &quot;, RR[CD], &quot; = 0.7&quot;)), x = 0.6, y = -3.75)</code></pre>
+<pre><code>## Warning in is.na(x): is.na() applied to non-(list or vector) of type
+## &#39;expression&#39;</code></pre>
+<p><img src="/blog/2018-12-21-episensr-schneeweiss_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
