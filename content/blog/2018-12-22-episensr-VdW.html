@@ -1,0 +1,74 @@
+---
+title: New in episensr 0.9.3 - E-value
+author: Denis Haine
+date: '2018-12-22'
+slug: episensr-VdW
+categories: ['R', 'epidemiology']
+tags: ["epidemiology", "rstats"]
+---
+
+
+
+<p>New version of
+<a href="https://cran.r-project.org/web/packages/episensr/index.html" title="R CRAN">episensr</a>
+available on CRAN!
+In the same vein than the other new function based on the work from
+<a href="../episensr-schneeweiss">Schneeweiss</a>, this new version allows the computation
+of the E-value as proposed by <a href="https://annals.org/aim/article-abstract/2643434/sensitivity-analysis-observational-research-introducing-e-value">VanderWeele and Ping,
+2017</a>.</p>
+<p>The E-value is the minimum strength of association, on the risk ratio scale,
+that an unmeasured confounder would need to have with both the treatment and the
+outcome to fully explain away a specific exposure-outcome association,
+conditional on the measured covariates.
+Let’s go through the example provided in the paper by VanderWeele and Ping.</p>
+<p>The example is based on the study by <a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(87)90902-0/fulltext">Victora et al.,
+1987</a>,
+looking at the association between breastfeeding and infant death by respiratory
+infection.
+They found that, after adjusting for various covariates, infants fed with
+formula were 3.9 [1.8, 8.7] times more likely to die of respiratory infections
+than those who were breastfed.
+However, there was no control for smoking status, which could be associated with
+less breastfeeding and greater respiratory death.</p>
+<p>The E-value expresses the magnitude of the confounder associations that could
+produce a confounding bias equal to the observed exposure-outcome association.
+With this example, we have:</p>
+<pre class="r"><code>library(episensr)
+confounders.evalue(est = 3.9, type = &quot;RR&quot;)</code></pre>
+<pre><code>## 
+## --E-value--
+##          Point estimate   CI closest to H_0
+##      RR:       3.900000                    
+## E-value:       7.263034</code></pre>
+<p>The risk ratio that was observed, 3.9, could be explained away by an unmeasured
+confounder associated with both the exposure and the outcome by a risk ratio of
+7.26-fold each, above and beyond the measured confounders, but weaker
+confounding could not do so.
+I.e. you need a really strong confounder to explain away the association found
+between infant diet and mortality, of a RR = 3.9.</p>
+<p>You can also report the limit of the confidence interval closest to the null.</p>
+<pre class="r"><code>confounders.evalue(est = 3.9, lower_ci = 1.8, upper_ci = 8.7, type = &quot;RR&quot;)</code></pre>
+<pre><code>## 
+## --E-value--
+##          Point estimate   CI closest to H_0
+##      RR:       3.900000            1.800000
+## E-value:       7.263034            3.000000</code></pre>
+<p>So an unmeasured confounder associated with respiratory death and breastfeeding
+by a risk ratio of 3-fold each could explain away the lower confidence limit,
+but not a weaker confounder.</p>
+<p>You can also compute E-values for non-null hypotheses.
+How large both unmeasured confounding associations has to be to shift the
+estimate from RR = 3.9 to a RR of 2?</p>
+<pre class="r"><code>confounders.evalue(est = 3.9, lower_ci = 1.8, upper_ci = 8.7,
+                   type = &quot;RR&quot;, true_est = 2)</code></pre>
+<pre><code>## 
+## --E-value--
+##          Point estimate   CI closest to H_0
+##      RR:       3.900000            1.800000
+## E-value:       3.311066            1.462475</code></pre>
+<p>For an unmeasured confounder to shift the observed RR of 3.9 to a RR of 2, an
+unmeasured confounder associated with both the breastfeeding and respiratory
+death of RR = 3.3-fold each is required, but a weaker confounder could not.</p>
+<p>Besides risk ratio (and odds ratio or hazard ratio for rare outcome, i.e. &lt;
+15%), E-values can also be computed for odds ratio and hazard ratio for common
+outcome, and differences in continuous outcomes.</p>
