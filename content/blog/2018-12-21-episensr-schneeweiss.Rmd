@@ -12,9 +12,8 @@ New version of
 available on CRAN!
 Besides now being easier to run [multiple bias
 analysis](../episensr-multi), this new version offers the option to
-check the effect of residual confounding based on the array and rule-out
-approaches ([Schneeweiss,
-2006](https://onlinelibrary.wiley.com/doi/abs/10.1002/pds.1200)).
+check the effect of residual confounding based on the array approach
+([Schneeweiss, 2006](https://onlinelibrary.wiley.com/doi/abs/10.1002/pds.1200)).
 
 Even after controlling for confounding (in the design or analysis of a study),
 some residual confounding  can still be present, because:
