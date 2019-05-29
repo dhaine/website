@@ -106,7 +106,7 @@ direct.label(p1, list("far.from.others.borders", "calc.boxes", "enlarge.box",
                            fill = "transparent", "draw.rects"))
 ```
 
-```{r, fig.cap='Contour plot of 95% lower confidence limit of corrected OR'}
+```{r, fig.cap='Contour plot of 95% lower confidence limit of corrected OR',warning=FALSE}
 dat$ORc_lci <- apply(dat, 1,
                      function(x) misclassification(matrix(c(126, 92, 71, 224),
                                                           nrow = 2, byrow = TRUE),

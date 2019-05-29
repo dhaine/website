@@ -1,9 +1,11 @@
 ---
 title: "Effect of tramiprosate in patients with mild-to-moderate Alzheimer's disease: Exploratory analyses of the MRI sub-group of the Alphase study"
-subtitle: S Gauthier, PS Aisen, SH Ferris, D Saumier, A Duong, D Haine, D Garceau, J Suhy, J Oh, W Lau, J Sampalis
+subtitle: 
 date: 2009-03-25
 comments: false
 ---
+
+### S Gauthier, PS Aisen, SH Ferris, D Saumier, A Duong, D Haine, D Garceau, J Suhy, J Oh, W Lau, J Sampalis
 
 Objectives: The efficacy, safety and disease-modification of tramiprosate
 (homotaurine) were investigated in a recently completed large-scale Phase III

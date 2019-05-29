@@ -1,9 +1,11 @@
 ---
 title: "Marginal structural Cox model to estimate the causal effect of clinical mastitis on Québec dairy cow culling risk"
-subtitle: D Haine, H Delgado, R Cue, A Sewalem, K Wade, R Lacroix, D Lefebvre, J Arsenault, É Bouchard, J Dubuc
+subtitle: 
 date: 2017-09-20
 comments: false
 ---
+
+### D Haine, H Delgado, R Cue, A Sewalem, K Wade, R Lacroix, D Lefebvre, J Arsenault, É Bouchard, J Dubuc
 
 Health disorders, such as milk fever, displaced abomasum, or retained placenta,
 as well as poor reproductive performance, are known risk factors for culling in
@@ -35,3 +37,5 @@ somatic cell count. Cows experienced a lower risk for CM, with milk production
 having more influence on culling risk in cows than heifers.
 
 [**In Preventive Veterinary Medicine**](https://www.sciencedirect.com/science/article/pii/S0167587716307243)
+
+Paper [here](/pdf/haine2017a.pdf).

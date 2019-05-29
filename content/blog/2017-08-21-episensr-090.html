@@ -26,9 +26,13 @@ However, it was a poor proxy for IVF, with a sensitivity of 60% and a
 specificity of 95%.
 These bias parameters were assumed to be nondifferential.
 Here’s the code with <code>episensr</code>:</p>
-<pre class="r"><code>library(episensr)
-
-misclassification_cov(array(c(1319, 38054, 5641, 405546, 565, 3583,
+<pre class="r"><code>library(episensr)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<pre class="r"><code>misclassification_cov(array(c(1319, 38054, 5641, 405546, 565, 3583,
                               781, 21958, 754, 34471, 4860, 383588),
                             dimnames = list(c(&quot;Twins+&quot;, &quot;Twins-&quot;),
                                             c(&quot;Folic acid+&quot;, &quot;Folic acid-&quot;),

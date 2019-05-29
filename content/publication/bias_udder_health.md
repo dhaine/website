@@ -1,10 +1,12 @@
 ---
 title: "Diagnosing intramammary infection: Controlling misclassification bias in
 longitudinal udder health studies"
-subtitle: D Haine, I Dohoo, D Scholl, S Dufour
+subtitle: 
 date: 2017-12-25
 comments: false
 ---
+
+### D Haine, I Dohoo, D Scholl, S Dufour
 
 Using imperfect tests may lead to biased estimates of disease frequency and of
 associations between risk factors and disease. For instance in longitudinal
@@ -51,3 +53,5 @@ potential biases and best sampling strategy is as critical as the choice of
 test.
 
 [**In Preventive Veterinary Medicine**](https://linkinghub.elsevier.com/retrieve/pii/S0167-5877(17)30082-X)
+
+See also the accompanying [R package](/software/misclass/).

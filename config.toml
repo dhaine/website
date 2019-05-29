@@ -1,143 +1,58 @@
 baseurl = "https://denishaine.ca/"
-DefaultContentLanguage = "en"
+languageCode = "en-us"
 title = "Denis Haine"
-theme = "beautifulhugo"
-metaDataFormat = "yaml"
-#pygmentsStyle = "trac"
-pygmentsUseClasses = false
-pygmentsCodeFences = false
-#pygmentsCodefencesGuessSyntax = true
-#pygmentsUseClassic = true
-#pygmentOptions = "linenos=inline"
-#disqusShortname = "XXX"
-#googleAnalytics = "XXX"
+theme = "hugo-lithium"
+googleAnalytics = ""
+disqusShortname = ""
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 enableEmoji = true
+footnotereturnlinkcontents = "↩"
+rssLimit = 30
 
-ignoreFiles = ["\\.Rmd$"]
-
-[Permalinks]
+[permalinks]
     post = "/:year/:month/:day/:slug/"
 
-[Params]
-#  homeTitle = "Beautiful Hugo Theme" # Set a different text for the header on the home page
-  subtitle = "Consulting Services | Epidemiology & Biostatistics"
-#  logo = "img/avatar-icon.png"
-  favicon = "img/favicon.ico"
-  dateFormat = "2006-01-02"
-  commit = false
-  rss = true
-  comments = true
-  readingTime = true
-#  useHLJS = true
-  socialShare = true
-#  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
-  highlightjsVersion = "9.12.0"
-  highlightjsCDN = "//cdn.bootcss.com"
-  highlightjsLang = ["r", "tex", "shell"]
-  highlightjsTheme = "github"
-
-[[Params.bigimg]]
-  src = "img/carlos-muza-84523-unsplash.jpg"
-  desc = "Photo by Carlos Muza on Unsplash"
-[[Params.bigimg]]
-  src = "img/volkan-olmez-73767-unsplash.jpg"
-  desc = "Photo by Volkan Olmez on Unsplash"
-[[Params.bigimg]]
-  src = "img/leon-ephraim-30995-unsplash.jpg"
-  desc = "Photo by Leon Ephraim on Unsplash"
-  # position: see values of CSS background-position.
-  position = "center top"
-#[[Params.bigimg]]
-#  src = "img/dh_utrecht.jpg"
-#  desc = "DH"
-#  position = "top"
-
-[Author]
-#  name = "Denis Haine"
-  website = "denishaine.ca"
-  email = "denis.haine@gmail.com"
-#  facebook = "username"
-#  googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
-  github = "dhaine"
-#  gitlab = "username"
-#  bitbucket = "username"
-  twitter = "denishaine"
-#  reddit = "username"
-  linkedin = "denishaine"
-#  xing = "username"
-  stackoverflow = "users/8126916/denis"
-#  snapchat = "username"
-#  instagram = "username"
-#  youtube = "user/username" # or channel/channelname
-#  soundcloud = "username"
-#  spotify = "username"
-#  bandcamp = "username"
-#  itchio = "username"
-#  vk = "username"
-#  paypal = "username"
-#  telegram = "username"
-#  orcid = "https://orcid.org/0000-0002-6691-7335"
-#  researchgate = "https://www.researchgate.net/profile/Denis_Haine"
-
 [[menu.main]]
-    name = "Home"
-    url = "/"
-    weight = 1
-
-[[menu.main]]
-    name = "Services"
-    url = "services/services"
-    weight = 2
-
+    name = "About"
+    url = "/about/"
 [[menu.main]]
     name = "Publications"
-    url = "publication"
-    weight = 3
-
+    url = "/publication/"
 [[menu.main]]
     name = "Software"
-    url = "software"
-    weight = 4
-
-[[menu.main]]
-    name = "CV"
-    url = "cv/denishaine_cv_en"
-    weight = 5
-
+    url = "/software/"
 [[menu.main]]
     name = "Blog"
-    url = "blog"
-    weight = 6
+    url = "/blog/"
 
-[[menu.main]]
-    name = "Contact"
-    url = "contact/contact/"
-    weight = 7
+[params]
+    description = "Personal website of Denis Haine."
+    dateFormat = "2006-01-02"
+    customCSS = ["css/custom.css"]
+    customJS = ["js/center-img.js", "js/right-quote.js", "js/no-highlight.js", "js/fix-footnote.js"]
+    
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.12.0"
+    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    highlightjsLang = ["r", "yaml", "tex"]
+    highlightjsTheme = "github"
 
-#[[menu.main]]
-#    identifier = "samples"
-#    name = "Samples"
-#    weight = 2
+    MathJaxCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    MathJaxVersion = "2.7.5"
 
-#[[menu.main]]
-#    parent = "samples"
-#    name = "Big Image Sample"
-#    url = "post/2017-03-07-bigimg-sample"
-#    weight = 1
+    # path to the favicon, under "static"
+    favicon = "favicon.ico"
 
-#[[menu.main]]
-#    parent = "samples"
-#    name = "Math Sample"
-#    url = "post/2017-03-05-math-sample"
-#    weight = 2
+    [params.logo]
+    url = "logo.png"
+    width = 50
+    height = 50
+    alt = "Logo"
 
-#[[menu.main]]
-#    parent = "samples"
-#    name = "Code Sample"
-#    url = "post/2016-03-08-code-sample"
-#    weight = 3
-
-#[[menu.main]]
-#    name = "Tags"
-#    url = "tags"
-#    weight = 3
+    [params.social]
+    twitter = "denishaine"
+    github = "dhaine"
+    linkedin = "in/denishaine"
+    stackoverflow = "users/8126916/denis"
+    orcid = "0000-0002-6691-7335"
+    researchgate = "profile/Denis_Haine"

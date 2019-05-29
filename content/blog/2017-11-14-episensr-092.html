@@ -73,9 +73,13 @@ Figure 1: Log-normal distribution with meanlog = 2.159 and sdlog = 0.28.
 </p>
 </div>
 <p>Now, let’s run <code>episensr.conf</code> with 50,000 iterations:</p>
-<pre class="r"><code>library(episensr)
-
-set.seed(123)
+<pre class="r"><code>library(episensr)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<pre class="r"><code>set.seed(123)
 res &lt;- probsens.conf(matrix(c(45, 94, 257, 945),
                             dimnames = list(c(&quot;Cases+&quot;, &quot;Cases-&quot;),
                                             c(&quot;Res+&quot;, &quot;Res-&quot;)),

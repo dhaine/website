@@ -1,9 +1,11 @@
 ---
 title: "Selection and misclassification biases in longitudinal studies"
-subtitle: D Haine, I Dohoo, S Dufour
+subtitle: 
 date: 2018-05-28
 comments: false
 ---
+
+### D Haine, I Dohoo, S Dufour
 
 Using imperfect tests may lead to biased estimates of disease frequency and
 measures of association.
@@ -57,6 +59,6 @@ follow-up.
 For more prevalent diseases we observed large risk ratio biases towards the
 null value, even with near perfect diagnosis.
 
-[**In Frontiers in Veterinary Science**](https://www.frontiersin.org/articles/10.3389/fvets.2018.00099/full)
+<i class="ai ai-open-access ai-2x"></i> [**In Frontiers in Veterinary Science**](https://www.frontiersin.org/articles/10.3389/fvets.2018.00099/full)
 
 Paper [here](/pdf/Haine-bias-frontiers.pdf) and supplementary material [there](/pdf/Haine-bias-frontiers-supp.pdf).

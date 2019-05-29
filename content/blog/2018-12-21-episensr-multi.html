@@ -53,8 +53,13 @@ medication was also used leading to a possible misclassification.
 The cross-classification frequencies of interview responses and pharmacy records
 allowed to determine sensitivity (Se) and specificity (Sp) for cases and
 controls, used in the misclassification bias sensitivity analysis:</p>
-<pre class="r"><code>library(episensr)
-library(magrittr)
+<pre class="r"><code>library(episensr)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<pre class="r"><code>library(magrittr)
 chien %&gt;% misclassification(., type = &quot;exposure&quot;, bias_parms = c(.56, .58, .99, .97))</code></pre>
 <pre><code>## --Observed data-- 
 ##          Outcome: BC+ 

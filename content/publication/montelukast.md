@@ -1,9 +1,11 @@
 ---
 title: "Montelukast as add-on therapy to inhaled corticosteroids in the management of asthma (the SAS trial)"
-subtitle: JM Fitzgerald, S Foucart, S Coyle, J Sampalis, D Haine, E Psaradellis, RA McIvor
+subtitle: 
 date: 2009-05-01
 comments: false
 ---
+
+### JM Fitzgerald, S Foucart, S Coyle, J Sampalis, D Haine, E Psaradellis, RA McIvor
 
 AIM: To evaluate the effectiveness of montelukast as add-on therapy for
 asthmatic patients who remain uncontrolled with low, moderate or high doses of
@@ -20,4 +22,4 @@ who were uncontrolled at baseline, each representing a clinically significant
 improvement. CONCLUSION: Montelukast add-on therapy is an effective alternative
 to inhaled corticosteroid monotherapy.
 
-[**In Canadian Respiratory Journal**](http://pubmedcentralcanada.ca/pmcc/articles/PMC3486710/)
+<i class="ai ai-open-access ai-2x"></i> [**In Canadian Respiratory Journal**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3486710/)

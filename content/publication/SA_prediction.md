@@ -1,9 +1,11 @@
 ---
 title: "Partial prediction of the duration and the clinical status of Staphylococcus aureus bovine intramammary infections based on the phenotypic and genotypic analysis of isolates"
-subtitle: S Pichette-Jolette, G Millette, E Demontier, D Bran-Barrera, M Cyrenne, C Ster, D Haine, G Keefe, F Malouin, JP Roy
+subtitle: 
 date: 2019-01-02
 comments: false
 ---
+
+### S Pichette-Jolette, G Millette, E Demontier, D Bran-Barrera, M Cyrenne, C Ster, D Haine, G Keefe, F Malouin, JP Roy
 
 *Staphylococcus aureus* is a bacterial pathogen causing bovine intramammary
 infections (IMIs) often leading to chronic clinical or subclinical mastitis.
@@ -34,4 +36,4 @@ In sum, strain characterization including determination of the spa type helps to
 predict duration of infection and the clinical or subclinical outcome of *S.
 aureus* IMIs.
 
-[**In Veterinary Microbiology**](https://authors.elsevier.com/c/1YB621L~HfyPXi)
+<i class="ai ai-open-access ai-2x"></i> [**In Veterinary Microbiology**](https://www.sciencedirect.com/science/article/pii/S0378113518311532)

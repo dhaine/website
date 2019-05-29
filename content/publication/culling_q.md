@@ -1,9 +1,11 @@
 ---
 title: "Culling from the actors' perspectives—Decision-making criteria for culling in Québec dairy herds enrolled in a veterinary preventive medicine program"
-subtitle: D Haine, H Delgado, R Cue, A Sewalem, K Wade, R Lacroix, D Lefebvre, J Rushton, J Arsenault, É Bouchard, J Dubuc
+subtitle: 
 date: 2017-10-09
 comments: false
 ---
+
+### D Haine, H Delgado, R Cue, A Sewalem, K Wade, R Lacroix, D Lefebvre, J Rushton, J Arsenault, É Bouchard, J Dubuc
 
 The series of events leading to the decision to cull a cow is complex,
 involving both individual-level and herd-level factors. While the decision is
@@ -42,3 +44,5 @@ important for assisting the change management processes required to increase
 farm profitability, and call for further investigation.
 
 [**In Preventive Veterinary Medicine**](https://www.sciencedirect.com/science/article/pii/S0167587716306560)
+
+Paper [here](/pdf/haine2017c.pdf).

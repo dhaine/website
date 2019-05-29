@@ -33,8 +33,13 @@ less breastfeeding and greater respiratory death.</p>
 <p>The E-value expresses the magnitude of the confounder associations that could
 produce a confounding bias equal to the observed exposure-outcome association.
 With this example, we have:</p>
-<pre class="r"><code>library(episensr)
-confounders.evalue(est = 3.9, type = &quot;RR&quot;)</code></pre>
+<pre class="r"><code>library(episensr)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<pre class="r"><code>confounders.evalue(est = 3.9, type = &quot;RR&quot;)</code></pre>
 <pre><code>## 
 ## --E-value--
 ##          Point estimate   CI closest to H_0

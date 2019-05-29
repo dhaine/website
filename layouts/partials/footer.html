@@ -1,101 +1,33 @@
-<footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <ul class="list-inline text-center footer-links">
-          {{ range .Site.Data.beautifulhugo.social.social_icons }}
-            {{- if isset $.Site.Author .id }}
-              <li>
-                <a href="{{ printf .url (index $.Site.Author .id) }}" title="{{ .title }}">
-                  <span class="fa-stack fa-lg">
-                    <i class="fa fa-circle fa-stack-2x"></i>
-                    <i class="fa {{ .icon }} fa-stack-1x fa-inverse"></i>
-                  </span>
-                </a>
-              </li>
-            {{- end -}}
+      <footer class="footer">
+        <ul class="footer-links">
+          {{ if .RSSLink }}
+          <li><a href="{{ .RSSLink | relURL }}" type="application/rss+xml" target="_blank"><i class="fa fa-rss" aria-hidden="true" title="RSS feed"></i><span class="sr-only">RSS feed</span></a></li>
           {{ end }}
-          {{ if .Site.Params.rss }}
-          <li>
-            {{ if .RSSLink }}
-            <a href="{{ .RSSLink }}" title="RSS">
-            {{ else }}
-            <a href="{{ .Site.RSSLink }}" title="RSS">
-            {{ end }}
-              <span class="fa-stack fa-lg">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
+          <li><a href="mailto:denis.haine@gmail.com"><i class="fa fa-envelope"
+          aria-hidden="true" title="Send me an email!"></i><span class="sr-only">Email</span></a></li>
+          <li><a href="http://scholar.google.ca/citations?user=KFeLZyIAAAAJ&hl=en"><i class="ai
+          ai-google-scholar" aria-hidden="true" title="Find me on Google Scholar!"></i><span class="sr-only">Google Scholar</span></a></li>
+          {{ with .Site.Params.social }}
+          <li><a href="https://linkedin.com/{{ .linkedin }}"><i class="fa fa-linkedin" aria-hidden="true" title="Linkedin"></i><span class="sr-only">Linkedin</span></a></li>
+          <li><a href="https://github.com/{{ .github }}"><i class="fa fa-github" aria-hidden="true" title="Github"></i><span class="sr-only">Github</span></a></li>
+          <li><a href="https://twitter.com/{{ .twitter }}"><i class="fa fa-twitter" aria-hidden="true" title="Twitter"></i><span class="sr-only">Twitter</span></a></li>
+          <li><a href="https://stackoverflow.com/{{ .stackoverflow }}"><i class="fa fa-stack-overflow" aria-hidden="true" title="Stackoverflow"></i><span class="sr-only">Stackoverflow</span></a></li>
+          <li><a href="https://orcid.org/{{ .orcid }}"><i class="ai ai-orcid" aria-hidden="true" title="ORCID"></i><span class="sr-only">Orcid</span></a></li>
+          <li><a href="https://researchgate.net/{{ .researchgate }}"><i class="ai ai-researchgate" aria-hidden="true" title="ResearchGate"></i><span class="sr-only">Researchgate</span></a></li>
           {{ end }}
+          <li><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa fa-cc" aria-hidden="true" title="Attribution-NonCommercial-ShareAlike 4.0 International"></i><span class="sr-only">Attribution-NonCommercial-ShareAlike 4.0 International</span></a></li>
+          <li><a href="/"><i class="fa fa-copyright" aria-hidden="true" title="Copyright"></i> 2014 - {{ dateFormat "2006" .Site.LastChange }}</a></li>
+          <li><a href="/"><i title="Last change"></i> Last change: {{ dateFormat "2006/01/02" .Site.LastChange }}</a></li>
         </ul>
-        <p class="credits copyright text-muted">
-          <!-- &nbsp;&nbsp; -->
-      	  © 2017 - 2018
-      	  &nbsp;•&nbsp;
-      	  <a href="https://denishaine.ca/"> Denis Haine </a>
-        </p>
-        <!-- <p class="credits theme-by text-muted">
-          <font style="vertical-align: inherit;"> Powered by </font><a href="http://gohugo.io"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Hugo</font></font></a><font style="vertical-align: inherit;"> and </font><a href="http://github.com/rstudio/blogdown"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Blogdown</font></font></a><font style="vertical-align: inherit;">
-        </p> -->
-      </div>
+      </footer>
     </div>
-  </div>
-</footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="{{ "js/main.js" | absURL }}"></script>
-{{- if .Site.Params.staticman }}
-<script src="{{ "js/staticman.js" | absURL }}"></script>
-{{- end }}
-{{- if (not ( .Site.Params.UseChroma )) }}
-<script src="{{ "js/highlight.min.js" | absURL }}"></script>
-<script> hljs.initHighlightingOnLoad(); </script>
-{{- end -}}
-<script> renderMathInElement(document.body); </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.js" integrity="sha256-UplRCs9v4KXVJvVY+p+RSo5Q4ilAUXh7kpjyIP5odyc=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe-ui-default.min.js" integrity="sha256-PWHOlUzc96pMc8ThwRIXPn8yH4NOLu42RQ0b9SpnpFk=" crossorigin="anonymous"></script>
-<script src="{{ "js/load-photoswipe.js" | absURL }}"></script>
-<!-- Google Custom Search Engine -->
-{{ if .Site.Params.gcse }}
-<script>
-  (function() {
-    var cx = '{{ .Site.Params.gcse }}';
-    var gcse = document.createElement('script');
-    gcse.type = 'text/javascript';
-    gcse.async = true;
-    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(gcse, s);
-  })();
-</script>
-{{ end }}
-
-{{ if .Site.Params.piwik }}
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
-
-  (function() {
-    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://{{ .Site.Params.piwik.server }}/";
-    _paq.push(["setTrackerUrl", u+"piwik.php"]);
-    _paq.push(["setSiteId", "{{ .Site.Params.piwik.id }}"]);
-    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
-    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript>
-<!-- Piwik Image Tracker -->
-<img src="http://{{ .Site.Params.piwik.server }}/piwik.php?idsite={{ .Site.Params.piwik.id }}&amp;rec=1" style="border:0" alt="" />
-<!-- End Piwik -->
-</noscript>
-<!-- End Piwik Code -->
-{{ end }}
-
-{{- partial "footer_custom.html" . }}
+    {{ range .Site.Params.customJS }}
+    <script async src="{{ . | relURL }}"></script>
+    {{ end }}
+    {{ partial "fix404" . }}
+    {{ partial "footer_highlightjs" . }}
+    {{ partial "footer_mathjax" . }}
+    {{ template "_internal/google_analytics.html" . }}
+    {{ partial "analytics/matomo" . }}
+  </body>
+</html>
