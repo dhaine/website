@@ -55,3 +55,5 @@ test.
 [**In Preventive Veterinary Medicine**](https://linkinghub.elsevier.com/retrieve/pii/S0167-5877(17)30082-X)
 
 See also the accompanying [R package](/software/misclass/).
+
+Paper [here](/pdf/haine2018.pdf).
